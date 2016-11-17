@@ -55,20 +55,24 @@ class TweetCleaner() {
 
 val tweetCleaner = new TweetCleaner();
 
-// Read text file
-val textFile = sc.textFile("hdfs:///user/mattb93/processedCollections/z_157-textOnly-raw")
+val collectionsToProcess = new Array("41", "45", "121", "122", "128", "145", "157", "443")
+for(collectionNumber <- collectionsToProcess) {
+    // Read text file
+    //val textFile = sc.textFile("hdfs:///user/mattb93/processedCollections/z_" + collectionNumber + "-textOnly-raw")
+    val textFile = sc.textFile(file://data/z_" + collectionNumber + "-textOnly-raw")
 
-// Sets up a tupe of (Long, Array[String]) representing an id and the tweet's text
-// ex: (42, [This, is, a, @twitter, tweet)
-var wordsArrays = textFile.map(line => line.split(" "))
+    // Sets up a tupe of (Long, Array[String]) representing an id and the tweet's text
+    // ex: (42, [This, is, a, @twitter, tweet)
+    var wordsArrays = textFile.map(line => line.split(" "))
 
-// Remove stop words from arrays
-wordsArrays = tweetCleaner.removeStopWords(wordsArrays)
+    // Remove stop words from arrays
+    wordsArrays = tweetCleaner.removeStopWords(wordsArrays)
 
-// Remove RT, links, and mentions
-wordsArrays = tweetCleaner.removeRTs(wordsArrays)
-wordsArrays = tweetCleaner.removeMentions(wordsArrays)
-wordsArrays = tweetCleaner.removeURLs(wordsArrays)
+    // Remove RT, links, and mentions
+    wordsArrays = tweetCleaner.removeRTs(wordsArrays)
+    wordsArrays = tweetCleaner.removeMentions(wordsArrays)
+    wordsArrays = tweetCleaner.removeURLs(wordsArrays)
 
-// Print to a text file
-tweetCleaner.writeTweetsToFile(wordsArrays, "z_157-noStopWords")
+    // Print to a text file
+    tweetCleaner.writeTweetsToFile(wordsArrays, "data/z_" + collectionNumber + "-textOnly-noStopWords-noRT-noMentions-noURLs")
+}
