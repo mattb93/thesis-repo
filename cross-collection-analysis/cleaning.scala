@@ -50,21 +50,43 @@ class TweetCleaner() {
      
 }
 
+import org.apache.avro.file.DataFileReader;
+import org.apache.avro.file.DataFileWriter;
+import org.apache.avro.io.DatumReader;
+import org.apache.avro.io.DatumWriter;
+import org.apache.avro.specific.SpecificDatumReader;
+import org.apache.avro.mapreduce.AvroKeyInputFormat
+import org.apache.avro.mapred.AvroKey
+import org.apache.hadoop.io.NullWritable
+import org.apache.avro.mapred.AvroInputFormat
+import org.apache.avro.mapred.AvroWrapper
+import org.apache.avro.generic.GenericRecord
+import org.apache.avro.mapred.{AvroInputFormat, AvroWrapper}
+import org.apache.hadoop.io.NullWritable
+
 // Collection 157 is the New Mexico Middle School Shooting, 
 // which is the smallest one at 11,757. 121 is the second smallest at 13,476
 
 val tweetCleaner = new TweetCleaner();
 
-val collectionsToProcess = Array("41", "45", "121", "122", "128", "145", "157", "443")
+//val collectionsToProcess = Array("41", "45", "121", "122", "128", "145", "157", "443")
+val collectionsToProcess = Array("157")
 for(collectionNumber <- collectionsToProcess) {
     println("Processing z_" + collectionNumber);
     // Read text file
-    val textFile = sc.textFile("hdfs:///user/mattb93/processedCollections/z_" + collectionNumber + "-textOnly-raw")
+    //val textFile = sc.textFile("hdfs:///user/mattb93/processedCollections/z_" + collectionNumber + "-textOnly-raw")
     //val textFile = sc.textFile("file:///home/mattb93/thesis-repo/cross-collection-analysis/data/z_" + collectionNumber +"/z_" + collectionNumber + "-textOnly-raw")
 
-    // Sets up a tupe of (Long, Array[String]) representing an id and the tweet's text
-    // ex: (42, [This, is, a, @twitter, tweet)
-    var wordsArrays = textFile.map(line => line.split(" "))
+    // Sets up an RDD of Array[String] representing tweet's text
+    // ex: [This, is, a, @twitter, tweet]
+    //var wordsArrays = textFile.map(line => line.split(" "))
+
+// begin testing
+    val path = "/user/mattb93/avrotest/z_157/part-m-00000.avro"
+    val avroRDD = sc.hadoopFile[AvroWrapper[GenericRecord], NullWritable, AvroInputFormat[GenericRecord]](path)
+
+    var wordsArrays = avroRDD.map(l => new String(l._1.datum.get("text").toString())).map(line => line.split(" "))
+// end testing
 
     // Remove stop words from arrays
     wordsArrays = tweetCleaner.removeStopWords(wordsArrays)
