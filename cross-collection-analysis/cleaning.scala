@@ -74,19 +74,18 @@ val collectionsToProcess = Array("157")
 for(collectionNumber <- collectionsToProcess) {
     println("Processing z_" + collectionNumber);
     // Read text file
-    //val textFile = sc.textFile("hdfs:///user/mattb93/processedCollections/z_" + collectionNumber + "-textOnly-raw")
-    //val textFile = sc.textFile("file:///home/mattb93/thesis-repo/cross-collection-analysis/data/z_" + collectionNumber +"/z_" + collectionNumber + "-textOnly-raw")
-
+    
     // Sets up an RDD of Array[String] representing tweet's text
     // ex: [This, is, a, @twitter, tweet]
     //var wordsArrays = textFile.map(line => line.split(" "))
-
-// begin testing
-    val path = "/user/mattb93/avrotest/z_157/part-m-00000.avro"
+    
+    // Read text file
+    val path = "/collections/z_" + collectionNumber + "/part-m-00000.avro"
     val avroRDD = sc.hadoopFile[AvroWrapper[GenericRecord], NullWritable, AvroInputFormat[GenericRecord]](path)
 
+    // Create an RDD of Array[String] representing each tweet's text
+    // ex: [This, is, a, @Twitter, #tweet]
     var wordsArrays = avroRDD.map(l => new String(l._1.datum.get("text").toString())).map(line => line.split(" "))
-// end testing
 
     // Remove stop words from arrays
     wordsArrays = tweetCleaner.removeStopWords(wordsArrays)
