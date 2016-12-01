@@ -30,6 +30,16 @@ class TweetCleaner() {
         return collection.map(arr => arr.filter(x => ! """.*http.*""".r.pattern.matcher(x).matches))
     }
 
+    def removePunctuation(collection: RDD[Array[String]]) : RDD[Array[String]] = {
+        println("Removing punctiation")
+        return collection.map(arr => arr.map(x => x.replaceAll("[^A-Za-z0-9@#]", "")))
+    }
+
+    def toLowerCase(collection: RDD[Array[String]]) : RDD[Array[String]] = {
+        println("Converting to lowercase")
+        return collection.map(arr => arr.map(x => x.toLowerCase()))
+    }
+
     def writeTweetsToFile(collection: RDD[Array[String]], fileName: String) {
 
         println("Writing results to file")
@@ -68,9 +78,8 @@ import org.apache.hadoop.io.NullWritable
 // which is the smallest one at 11,757. 121 is the second smallest at 13,476
 
 val tweetCleaner = new TweetCleaner();
-
-//val collectionsToProcess = Array("41", "45", "121", "122", "128", "145", "157", "443")
-val collectionsToProcess = Array("157")
+val collectionsToProcess = Array("41", "45", "122", "128", "145", "158", "444")
+//val collectionsToProcess = Array("157")
 for(collectionNumber <- collectionsToProcess) {
     println("Processing z_" + collectionNumber);
     // Read text file
@@ -80,7 +89,7 @@ for(collectionNumber <- collectionsToProcess) {
     //var wordsArrays = textFile.map(line => line.split(" "))
     
     // Read text file
-    val path = "/collections/z_" + collectionNumber + "/part-m-00000.avro"
+    val path = "/collections/tweets/z_" + collectionNumber + "/part-m-00000.avro"
     val avroRDD = sc.hadoopFile[AvroWrapper[GenericRecord], NullWritable, AvroInputFormat[GenericRecord]](path)
 
     // Create an RDD of Array[String] representing each tweet's text
@@ -94,6 +103,12 @@ for(collectionNumber <- collectionsToProcess) {
     wordsArrays = tweetCleaner.removeRTs(wordsArrays)
     wordsArrays = tweetCleaner.removeMentions(wordsArrays)
     wordsArrays = tweetCleaner.removeURLs(wordsArrays)
+
+    // Remove punctuation
+    wordsArrays = tweetCleaner.removePunctuation(wordsArrays)
+
+    // Switch to lowercase
+    wordsArrays = tweetCleaner.toLowerCase(wordsArrays)
 
     // Print to a text file
     tweetCleaner.writeTweetsToFile(wordsArrays, "data/z_" + collectionNumber + "/z_" + collectionNumber + "-textOnly-noStopWords-noRT-noMentions-noURLs")

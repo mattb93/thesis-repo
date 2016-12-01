@@ -38,4 +38,4 @@ class WordCounter() {
 // at 13,476
 val wordCounter = new WordCounter();
 //wordCounter.countWords("157");
-wordCounter.batchCount(Array("41", "45", "121", "122", "128", "145", "157", "443"));
+wordCounter.batchCount(Array("41", "45", "122", "128", "145", "158", "444"));

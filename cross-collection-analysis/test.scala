@@ -1,3 +1,4 @@
+/*
 import org.apache.avro.file.DataFileReader;
 import org.apache.avro.file.DataFileWriter;
 import org.apache.avro.io.DatumReader;
@@ -16,3 +17,8 @@ val path = "/user/mattb93/avrotest/z_157/part-m-00000.avro"
 val avroRDD = sc.hadoopFile[AvroWrapper[GenericRecord], NullWritable, AvroInputFormat[GenericRecord]](path)
 
 avroRDD.map(l => new String(l._1.datum.get("text").toString())).map(line => line.split(" "))
+*/
+
+var a = Array("@a", "#b", "c!", "d,")
+a = a.map(x => x.replaceAll("[^A-Za-z0-9@#]", ""))
+a.foreach(println)
