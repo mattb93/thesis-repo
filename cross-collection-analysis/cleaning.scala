@@ -78,8 +78,8 @@ import org.apache.hadoop.io.NullWritable
 // which is the smallest one at 11,757. 121 is the second smallest at 13,476
 
 val tweetCleaner = new TweetCleaner();
-val collectionsToProcess = Array("41", "45", "122", "128", "145", "158", "444")
-//val collectionsToProcess = Array("157")
+//val collectionsToProcess = Array("41", "45", "122", "128", "145", "158", "444")
+val collectionsToProcess = Array("443")
 for(collectionNumber <- collectionsToProcess) {
     println("Processing z_" + collectionNumber);
     // Read text file

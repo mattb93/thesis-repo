@@ -37,5 +37,5 @@ class WordCounter() {
 // which is the smallest one at 11,757. 121 is the second smallest
 // at 13,476
 val wordCounter = new WordCounter();
-//wordCounter.countWords("157");
-wordCounter.batchCount(Array("41", "45", "122", "128", "145", "158", "444"));
+wordCounter.countWords("443");
+//wordCounter.batchCount(Array("41", "45", "122", "128", "145", "158", "444"));
