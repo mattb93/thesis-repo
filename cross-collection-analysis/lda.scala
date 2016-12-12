@@ -65,4 +65,10 @@ class lda() {
 }
 
 val ldaRunner = new lda()
-ldaRunner.analyze("122", Array("school", "shooting", "georgia", ""), 5)
+
+ldaRunner.analyze("41", Array("connecticut", "shooting"), 5)
+ldaRunner.analyze("45", Array("kentucky", "shooting"), 5)
+ldaRunner.analyze("128", Array("antoinette", "tuff"), 5)
+ldaRunner.analyze("145", Array("school", "nevada", "shooting"), 5)
+ldaRunner.analyze("157", Array("school", "new", "mexico", "shooting"), 5)
+ldaRunner.analyze("443", Array("shooting", "marysville"), 5)

@@ -32,7 +32,7 @@ class TweetCleaner() {
 
     def removePunctuation(collection: RDD[Array[String]]) : RDD[Array[String]] = {
         println("Removing punctiation")
-        return collection.map(arr => arr.map(x => x.replaceAll("[^A-Za-z0-9@#]", "")))
+        return collection.map(arr => arr.map(x => x.replaceAll("[^A-Za-z0-9@#]", ""))).map(arr => arr.filter(_.length > 0))
     }
 
     def toLowerCase(collection: RDD[Array[String]]) : RDD[Array[String]] = {
@@ -78,8 +78,8 @@ import org.apache.hadoop.io.NullWritable
 // which is the smallest one at 11,757. 121 is the second smallest at 13,476
 
 val tweetCleaner = new TweetCleaner();
-//val collectionsToProcess = Array("41", "45", "122", "128", "145", "158", "444")
-val collectionsToProcess = Array("443")
+val collectionsToProcess = Array("41", "45", "128", "145", "157", "443")
+//val collectionsToProcess = Array("443")
 for(collectionNumber <- collectionsToProcess) {
     println("Processing z_" + collectionNumber);
     // Read text file
@@ -111,5 +111,5 @@ for(collectionNumber <- collectionsToProcess) {
     wordsArrays = tweetCleaner.toLowerCase(wordsArrays)
 
     // Print to a text file
-    tweetCleaner.writeTweetsToFile(wordsArrays, "data/z_" + collectionNumber + "/z_" + collectionNumber + "-textOnly-noStopWords-noRT-noMentions-noURLs")
+    tweetCleaner.writeTweetsToFile(wordsArrays, "data/z_" + collectionNumber + "-textOnly-noStopWords-noRT-noMentions-noURLs")
 }
