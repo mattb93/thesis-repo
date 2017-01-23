@@ -42,7 +42,7 @@ class TweetCleaner() {
 
     def writeTweetsToFile(collection: RDD[Array[String]], fileName: String) {
 
-        println("Writing results to file")
+        println("Writing results to file '" + fileName + "'")
         val resultFile = new File(fileName)
         val bufferedWriter = new BufferedWriter(new FileWriter(resultFile))
 
@@ -56,6 +56,14 @@ class TweetCleaner() {
         }
         
         bufferedWriter.close()
+    }
+
+    def writeTweetsToHDFS(collection: RDD[Array[String]], dir: String, fileName: String) {
+
+        println("Writing results to HDFS at '" + dir + "/" + fileName + "'")
+
+        collection.map(L => L.mkString(" ")).saveAsTextFile(dir + "/" + fileName)
+        
     }
      
 }
@@ -78,8 +86,8 @@ import org.apache.hadoop.io.NullWritable
 // which is the smallest one at 11,757. 121 is the second smallest at 13,476
 
 val tweetCleaner = new TweetCleaner();
-val collectionsToProcess = Array("41", "45", "128", "145", "157", "443")
-//val collectionsToProcess = Array("443")
+//val collectionsToProcess = Array("41", "45", "128", "145", "157", "443")
+val collectionsToProcess = Array("157")
 for(collectionNumber <- collectionsToProcess) {
     println("Processing z_" + collectionNumber);
     // Read text file
@@ -111,5 +119,5 @@ for(collectionNumber <- collectionsToProcess) {
     wordsArrays = tweetCleaner.toLowerCase(wordsArrays)
 
     // Print to a text file
-    tweetCleaner.writeTweetsToFile(wordsArrays, "data/z_" + collectionNumber + "-textOnly-noStopWords-noRT-noMentions-noURLs")
+    tweetCleaner.writeTweetsToHDFS(wordsArrays, "/user/mattb93/hdfsWriteTest", "z_" + collectionNumber + "-textOnly-noStopWords-noRT-noMentions-noURLs")
 }
