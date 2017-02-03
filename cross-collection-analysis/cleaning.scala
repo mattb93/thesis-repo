@@ -1,5 +1,4 @@
 class TweetCleaner() {
-    import java.io._
     import org.apache.spark.rdd.RDD
     import org.apache.spark.ml.feature.StopWordsRemover
     import sqlContext.implicits._
@@ -39,32 +38,6 @@ class TweetCleaner() {
         println("Converting to lowercase")
         return collection.map(arr => arr.map(x => x.toLowerCase()))
     }
-
-    def writeTweetsToFile(collection: RDD[Array[String]], fileName: String) {
-
-        println("Writing results to file '" + fileName + "'")
-        val resultFile = new File(fileName)
-        val bufferedWriter = new BufferedWriter(new FileWriter(resultFile))
-
-        val localCollection = collection.collect()
-
-        for(arr <- localCollection) {
-            for(str <- arr) {
-                bufferedWriter.write(str + " ")
-            }
-            bufferedWriter.write("\n")
-        }
-        
-        bufferedWriter.close()
-    }
-
-    def writeTweetsToHDFS(collection: RDD[Array[String]], dir: String, fileName: String) {
-
-        println("Writing results to HDFS at '" + dir + "/" + fileName + "'")
-
-        collection.map(L => L.mkString(" ")).saveAsTextFile(dir + "/" + fileName)
-        
-    }
      
 }
 
@@ -75,11 +48,9 @@ import org.apache.avro.io.DatumWriter;
 import org.apache.avro.specific.SpecificDatumReader;
 import org.apache.avro.mapreduce.AvroKeyInputFormat
 import org.apache.avro.mapred.AvroKey
-import org.apache.hadoop.io.NullWritable
 import org.apache.avro.mapred.AvroInputFormat
 import org.apache.avro.mapred.AvroWrapper
 import org.apache.avro.generic.GenericRecord
-import org.apache.avro.mapred.{AvroInputFormat, AvroWrapper}
 import org.apache.hadoop.io.NullWritable
 
 // Collection 157 is the New Mexico Middle School Shooting, 
@@ -97,12 +68,8 @@ for(collectionNumber <- collectionsToProcess) {
     //var wordsArrays = textFile.map(line => line.split(" "))
     
     // Read text file
-    val path = "/collections/tweets/z_" + collectionNumber + "/part-m-00000.avro"
-    val avroRDD = sc.hadoopFile[AvroWrapper[GenericRecord], NullWritable, AvroInputFormat[GenericRecord]](path)
-
-    // Create an RDD of Array[String] representing each tweet's text
-    // ex: [This, is, a, @Twitter, #tweet]
-    var wordsArrays = avroRDD.map(l => new String(l._1.datum.get("text").toString())).map(line => line.split(" "))
+    val interface = new hbaseReadWrite()
+    val wordsArrays = interface.readCollectionNumber(collectionNumber)
 
     // Remove stop words from arrays
     wordsArrays = tweetCleaner.removeStopWords(wordsArrays)
