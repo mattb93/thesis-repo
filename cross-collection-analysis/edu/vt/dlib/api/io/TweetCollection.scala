@@ -19,7 +19,7 @@ import scala.collection.mutable.WrappedArray
  * //do some processing
  * 
  */
-class collectionReader(var collectionNumber: Int) {
+class TweetCollection(var collectionNumber: Int) {
 
     val path = "/collections/tweets/z_" + collectionNumber + "/part-m-00000.avro"
     val collection = sc.hadoopFile[AvroWrapper[GenericRecord], NullWriteable, AvroInputFormat[GenericRecord]](path)

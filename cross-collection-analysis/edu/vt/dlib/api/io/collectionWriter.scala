@@ -4,7 +4,7 @@ package edu.vt.dlib.api.io
  * Interface to write collections back to a local file, hdfs, or hbase 
  *
  */
-class collectionWriter() {
+class CollectionWriter() {
 
     
 	/*
