@@ -1,4 +1,6 @@
-import edu.vt.dlib._
+import edu.vt.dlib.api.pipeline._
+import edu.vt.dlib.analytics._
+
 
 //========================================//
 // Run word count on a set of collections //
