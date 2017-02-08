@@ -1,5 +1,5 @@
-import edu.vt.dlib.api.pipeline._
-import edu.vt.dlib.analytics._
+import edu.vt.dlib.api.pipeline.Runner
+import edu.vt.dlib.analytics.WordCounter
 
 
 //========================================//
@@ -7,10 +7,10 @@ import edu.vt.dlib.analytics._
 //========================================//
 
 // Define collections
-val collections = Array("41", "45", "128", "145", "157", "443")
+val collections = Array(41, 45, 128, 145, 157, 443)
 
 // Create a new runner with the collection numbers and a word counter to run
-val runner = new Runner(collections, new WordCounter())
+val runner = new Runner(sc, sqlContext)
 
 // Run the analysis
-runner.run()
+runner.run(collections, new WordCounter())
