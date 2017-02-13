@@ -10,7 +10,7 @@ package edu.vt.dlib.api.io
  * //do some processing
  * 
  */
-class TweetCollection(var collectionNumber: Int, val sc: org.apache.spark.SparkContext, val sqlContext: org.apache.spark.sql.SQLContext) {
+class TweetCollection(var collectionId: String, val sc: org.apache.spark.SparkContext, val sqlContext: org.apache.spark.sql.SQLContext) {
     import org.apache.avro.mapred.AvroInputFormat
     import org.apache.avro.mapred.AvroWrapper
     import org.apache.avro.generic.GenericRecord
@@ -20,10 +20,15 @@ class TweetCollection(var collectionNumber: Int, val sc: org.apache.spark.SparkC
 
     import sqlContext.implicits._
 
+    object Format extends Enumeration {
+        type Format = Value
+        val TEXT, ARRAYS, AVRO = Value
+    }
 
 
-    val path = "/collections/tweets/z_" + collectionNumber + "/part-m-00000.avro"
-    val collection = sc.hadoopFile[AvroWrapper[GenericRecord], NullWritable, AvroInputFormat[GenericRecord]](path)
+    private val path = "/collections/tweets/z_" + collectionId + "/part-m-00000.avro"
+    private val collection = sc.hadoopFile[AvroWrapper[GenericRecord], NullWritable, AvroInputFormat[GenericRecord]](path)
+    private val currentFormat = AVRO
 
     /*
      * Returns the raw avro data for more advanced processing.
@@ -37,7 +42,13 @@ class TweetCollection(var collectionNumber: Int, val sc: org.apache.spark.SparkC
      * ex: ["This is one tweet", "This is another #tweet @twitter"]
      */
     def asPlainText() : RDD[String] = {
-        return collection.map(l => new String(l._1.datum.get("text").toString()))
+        if(currentFormat == AVRO) {
+            collection = collection.map(l => new String(l._1.datum.get("text").toString()))
+        }
+        else if(currentFormat == ARRAYS) {
+            collection = collection.map(L => )
+        }
+        return collection
     }
 
     /*
