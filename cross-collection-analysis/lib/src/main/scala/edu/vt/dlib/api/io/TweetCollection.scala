@@ -11,6 +11,7 @@ package edu.vt.dlib.api.io
  * 
  */
 class TweetCollection(var collectionId: String, val sc: org.apache.spark.SparkContext, val sqlContext: org.apache.spark.sql.SQLContext) {
+    
     import org.apache.avro.mapred.AvroInputFormat
     import org.apache.avro.mapred.AvroWrapper
     import org.apache.avro.generic.GenericRecord
@@ -18,13 +19,14 @@ class TweetCollection(var collectionId: String, val sc: org.apache.spark.SparkCo
     import org.apache.spark.ml.feature.StopWordsRemover
     import org.apache.hadoop.io.NullWritable
     import scala.collection.mutable.WrappedArray
+    
     import sqlContext.implicits._
 
 
-    private val path = "/collections/tweets/z_" + collectionId + "/part-m-00000.avro"
-    private val collection = sc.hadoopFile[AvroWrapper[GenericRecord], NullWritable, AvroInputFormat[GenericRecord]](path)
-    collection = collection.map(lambda => (new String(collectionId + "-" + lambda._1.datum.get("id").toString()), new String(lambda._1.datum.get("text").toString).split(" ")))
-
+    val path = "/collections/tweets/z_" + collectionId + "/part-m-00000.avro"
+    val records = sc.hadoopFile[AvroWrapper[GenericRecord], NullWritable, AvroInputFormat[GenericRecord]](path)
+    var collection = records.map(lambda => (new String(lambda._1.datum.get("id").toString), new String(lambda._1.datum.get("text").toString).split(" ")))
+    //var collection = records.map(lambda => (lambda._1.datum.get("id").toString, lambda._1.datum.get("text").toString.split(" "))
 
     def getCollection() : RDD[(String, Array[String])] = {
         return collection
@@ -37,25 +39,27 @@ class TweetCollection(var collectionId: String, val sc: org.apache.spark.SparkCo
     def asArrays(): RDD[Array[String]] = {
         return collection.map(entry => entry._2)
 
+    }
+
     def removeStopWords() : TweetCollection = {
         println("Removing Stop Words")
 
         val remover = new StopWordsRemover().setInputCol("raw").setOutputCol("filtered")
-        collection = remover.transform(collection.toDF("id", "raw")).select("filtered").map(r => (r(0).asInstanceOf[WrappedArray[String]]).toArray)
+        collection = remover.transform(collection.toDF("id", "raw")).select("id", "filtered").map(r => (r(0).toString, (r(1).asInstanceOf[WrappedArray[String]]).toArray))
         return this
     }
 
     def removeRTs() : TweetCollection = {
         println("Removing 'RT' instances")
 
-        collection = collection.map(entry => (entry._1, entry_2.filter(! _.contains("RT"))))
+        collection = collection.map(entry => (entry._1, entry._2.filter(! _.contains("RT"))))
 
         return this
     }
 
     def removeMentions() : TweetCollection = {
         println("Removing mentions")
-        collection = collection.map(entry => (entry._1, entry._2.filter(x => ! """\"*@.*""".r.pattern.matcher(x).matches))
+        collection = collection.map(entry => (entry._1, entry._2.filter(x => ! """\"*@.*""".r.pattern.matcher(x).matches)))
         return this
     }
 
@@ -67,13 +71,13 @@ class TweetCollection(var collectionId: String, val sc: org.apache.spark.SparkCo
 
     def removePunctuation() : TweetCollection = {
         println("Removing punctiation")
-        collection = collection.map(entry => (entry._1, entry._2.map(x => x.replaceAll("[^A-Za-z0-9@#]", "")))).filter(entry => entry_2.length > 0)
+        collection = collection.map(entry => (entry._1, entry._2.map(x => x.replaceAll("[^A-Za-z0-9@#]", "")))).filter(entry => entry._2.length > 0)
         return this
     }
 
-    def toLowerCase(collection: RDD[Array[String]]) : RDD[Array[String]] = {
+    def toLowerCase() : TweetCollection = {
         println("Converting to lowercase")
-        collection = collection.map(arr => arr.map(x => x.toLowerCase()))
+        collection = collection.map(entry => (entry._1, entry._2.map(x => x.toLowerCase())))
         return this
     }
 }

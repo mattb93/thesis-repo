@@ -1,4 +1,5 @@
 // This is a test
+/*
 import edu.vt.dlib.api.io.TweetCollection
 
 class CollectionCleaner(var collection: TweetCollection) {
@@ -91,3 +92,4 @@ for(collectionNumber <- collectionsToProcess) {
     // Print to a text file
     tweetCleaner.writeTweetsToHDFS(wordsArrays, "/user/mattb93/hdfsWriteTest", "z_" + collectionNumber + "-textOnly-noStopWords-noRT-noMentions-noURLs")
 }
+*/

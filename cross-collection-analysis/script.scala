@@ -7,8 +7,8 @@ import edu.vt.dlib.analytics.WordCounter
 //=========================================//
 
 // Define collections
-//val collections = Array(41, 45, 128, 145, 157, 443)
-val collections = Array(41)
+//val collections = Array("41", "45", "128", "145", "157", "443")
+val collections = Array("41")
 
 // Create a new runner with the collection numbers and a word counter to run
 val runner = new Runner(sc, sqlContext)
