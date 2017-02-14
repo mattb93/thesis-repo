@@ -14,48 +14,66 @@ class TweetCollection(var collectionId: String, val sc: org.apache.spark.SparkCo
     import org.apache.avro.mapred.AvroInputFormat
     import org.apache.avro.mapred.AvroWrapper
     import org.apache.avro.generic.GenericRecord
-    import org.apache.hadoop.io.NullWritable
     import org.apache.spark.rdd.RDD
+    import org.apache.spark.ml.feature.StopWordsRemover
+    import org.apache.hadoop.io.NullWritable
     import scala.collection.mutable.WrappedArray
-
     import sqlContext.implicits._
-
-    object Format extends Enumeration {
-        type Format = Value
-        val TEXT, ARRAYS, AVRO = Value
-    }
 
 
     private val path = "/collections/tweets/z_" + collectionId + "/part-m-00000.avro"
     private val collection = sc.hadoopFile[AvroWrapper[GenericRecord], NullWritable, AvroInputFormat[GenericRecord]](path)
-    private val currentFormat = AVRO
+    collection = collection.map(lambda => (new String(collectionId + "-" + lambda._1.datum.get("id").toString()), new String(lambda._1.datum.get("text").toString).split(" ")))
 
-    /*
-     * Returns the raw avro data for more advanced processing.
-     */
-    //def asAvroRDD() : RDD[AvroWrapper[GenericRecord], NullWriteable, AvroInputFormat[GenericRecord]] = {
-    //    return collection
-    //}
 
-    /*
-     * Returns an RDD containing the text of the tweets.
-     * ex: ["This is one tweet", "This is another #tweet @twitter"]
-     */
-    def asPlainText() : RDD[String] = {
-        if(currentFormat == AVRO) {
-            collection = collection.map(l => new String(l._1.datum.get("text").toString()))
-        }
-        else if(currentFormat == ARRAYS) {
-            collection = collection.map(L => )
-        }
+    def getCollection() : RDD[(String, Array[String])] = {
         return collection
     }
 
-    /*
-     * Returns an RDD containing the text of the tweets broken up into array form.
-     * ex: [["This", "is", "one", "tweet"], ["This", "is", "another", "#tweet", "@Twitter"]]
-     */
-    def asStringArrays() : RDD[Array[String]]  = {
-        return collection.map(l => new String(l._1.datum.get("text").toString())).map(line => line.split(" "))
+    def asPlainText(): RDD[String] = {
+        return collection.map(entry => entry._2.mkString(" "))
+    }
+
+    def asArrays(): RDD[Array[String]] = {
+        return collection.map(entry => entry._2)
+
+    def removeStopWords() : TweetCollection = {
+        println("Removing Stop Words")
+
+        val remover = new StopWordsRemover().setInputCol("raw").setOutputCol("filtered")
+        collection = remover.transform(collection.toDF("id", "raw")).select("filtered").map(r => (r(0).asInstanceOf[WrappedArray[String]]).toArray)
+        return this
+    }
+
+    def removeRTs() : TweetCollection = {
+        println("Removing 'RT' instances")
+
+        collection = collection.map(entry => (entry._1, entry_2.filter(! _.contains("RT"))))
+
+        return this
+    }
+
+    def removeMentions() : TweetCollection = {
+        println("Removing mentions")
+        collection = collection.map(entry => (entry._1, entry._2.filter(x => ! """\"*@.*""".r.pattern.matcher(x).matches))
+        return this
+    }
+
+    def removeURLs() : TweetCollection = {
+        println("Removing URLs")
+        collection = collection.map(entry => (entry._1, entry._2.filter(x => ! """.*http.*""".r.pattern.matcher(x).matches)))
+        return this
+    }
+
+    def removePunctuation() : TweetCollection = {
+        println("Removing punctiation")
+        collection = collection.map(entry => (entry._1, entry._2.map(x => x.replaceAll("[^A-Za-z0-9@#]", "")))).filter(entry => entry_2.length > 0)
+        return this
+    }
+
+    def toLowerCase(collection: RDD[Array[String]]) : RDD[Array[String]] = {
+        println("Converting to lowercase")
+        collection = collection.map(arr => arr.map(x => x.toLowerCase()))
+        return this
     }
 }

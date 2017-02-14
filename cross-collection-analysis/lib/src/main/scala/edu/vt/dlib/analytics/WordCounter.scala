@@ -26,4 +26,3 @@ class WordCounter() extends Runnable {
         bufferedWriter.close()
     }
 }
-
