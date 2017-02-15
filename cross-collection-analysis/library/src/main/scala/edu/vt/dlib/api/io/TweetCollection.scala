@@ -3,11 +3,6 @@ package edu.vt.dlib.api.io
 /*
  * Provides convenience methods to read tweet data from and write tweet data to the DLRL cluster.
  * Reads from avro files and provides methods to map data to more useful formats.
- *
- * Example usage:
- * val hdfsFile = new hdfsTweetsFileWrapper(42)
- * val tweetsText = hdfsFile.asPlainText()
- * //do some processing
  * 
  */
 class TweetCollection(var collectionId: String, val sc: org.apache.spark.SparkContext, val sqlContext: org.apache.spark.sql.SQLContext) {
@@ -26,26 +21,32 @@ class TweetCollection(var collectionId: String, val sc: org.apache.spark.SparkCo
     val path = "/collections/tweets/z_" + collectionId + "/part-m-00000.avro"
     val records = sc.hadoopFile[AvroWrapper[GenericRecord], NullWritable, AvroInputFormat[GenericRecord]](path)
     var collection = records.map(lambda => (new String(lambda._1.datum.get("id").toString), new String(lambda._1.datum.get("text").toString).split(" ")))
-    //var collection = records.map(lambda => (lambda._1.datum.get("id").toString, lambda._1.datum.get("text").toString.split(" "))
 
     def getCollection() : RDD[(String, Array[String])] = {
         return collection
     }
 
-    def asPlainText(): RDD[String] = {
+    def getPlainText(): RDD[String] = {
         return collection.map(entry => entry._2.mkString(" "))
     }
 
-    def asArrays(): RDD[Array[String]] = {
-        return collection.map(entry => entry._2)
+    def getPlainTextID() : RDD[(String, String)] = {
+        return collection.map(entry => (entry._1, entry._2.mkString(" ")))
+    }
 
+    def getTextArrays(): RDD[Array[String]] = {
+        return collection.map(entry => entry._2)
+    }
+
+    def getTextArraysID(): RDD[(String, Array[String])] = {
+        return collection
     }
 
     def removeStopWords() : TweetCollection = {
         println("Removing Stop Words")
 
         val remover = new StopWordsRemover().setInputCol("raw").setOutputCol("filtered")
-        collection = remover.transform(collection.toDF("id", "raw")).select("id", "filtered").map(r => (r(0).toString, (r(1).asInstanceOf[WrappedArray[String]]).toArray))
+        collection = remover.transform(collection.toDF("id", "raw")).select("id", "filtered").map(row => (row(0).toString, (row(1).asInstanceOf[WrappedArray[String]]).toArray))
         return this
     }
 
@@ -60,6 +61,12 @@ class TweetCollection(var collectionId: String, val sc: org.apache.spark.SparkCo
     def removeMentions() : TweetCollection = {
         println("Removing mentions")
         collection = collection.map(entry => (entry._1, entry._2.filter(x => ! """\"*@.*""".r.pattern.matcher(x).matches)))
+        return this
+    }
+
+    def removeHashtags() : TweetCollection = {
+        println("Removing hashtags")
+        collection = collection.map(entry => (entry._1, entry._2.filter(x => ! """#.*""".r.pattern.matcher(x).matches))
         return this
     }
 

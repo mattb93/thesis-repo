@@ -4,14 +4,16 @@ package edu.vt.dlib.api.io
  * Interface to write collections back to a local file, hdfs, or hbase 
  *
  */
-class CollectionWriter() {
+class DataWriter() {
 
-    
+    import org.apache.spark.rdd.RDD
+    import java.io._
+
 	/*
 	 * Write the tweets to a file on the local filesystem (as opposed to on HDFS).
 	 * Takes in an RDD[Array[String]] and maps it back to plain text. Uses java io.
 	 */
-	def writeToFile(collection: RDD[Array[String]], path: String) {
+	def writeToFile(collection: RDD[(String, Array[String])], path: String) {
 
         println("Writing results to local file '" + path + "'")
 
@@ -20,26 +22,12 @@ class CollectionWriter() {
 
         val localCollection = collection.collect()
 
-        for(arr <- localCollection) {
-            for(str <- arr) {
-                bufferedWriter.write(str + " ")
+        for(record <- localCollection) {
+            bufferedWriter.write(record._1 + "\t")
+            for(token <- record._2) {
+                bufferedWriter.write(token + " ")
             }
             bufferedWriter.write("\n")
-        }
-        
-        bufferedWriter.close()
-    }
-
-    def writeToFile(collection: RDD[String], path: String) {
-        println("Writing results to local file '" + path + "'")
-
-        val resultFile = new File(path)
-        val bufferedWriter = new BufferedWriter(new FileWriter(resultFile))
-
-        val localCollection = collection.collect()
-
-        for(str <- localCollection) {
-            bufferedWriter.write(str + "\n")
         }
         
         bufferedWriter.close()
@@ -50,15 +38,15 @@ class CollectionWriter() {
      * maps it back to plain text. Recommend specifying an absolute path rather 
      * than a local one.
      */
-    def writeToHDFS(collection: RDD[Array[String]], path: String) {
+//    def writeToHDFS(collection: RDD[Array[String]], path: String) {
+//
+//        println("Writing results to HDFS at '" + path + "'")
+//
+//        collection.map(L => L.mkString(" ")).saveAsTextFile(path)
+//        
+//    }
 
-        println("Writing results to HDFS at '" + path + "'")
-
-        collection.map(L => L.mkString(" ")).saveAsTextFile(path)
-        
-    }
-
-    def writeToHDFS(collection: RDD[String], pathL String) {
+    def writeToHDFS(collection: RDD[(String, Array[String])], path: String) {
         println("Writing results to HDFS at '" + path + "'")
 
         collection.saveAsTextFile(path)
