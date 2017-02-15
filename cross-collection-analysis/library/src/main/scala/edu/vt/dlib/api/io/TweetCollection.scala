@@ -87,4 +87,16 @@ class TweetCollection(var collectionId: String, val sc: org.apache.spark.SparkCo
         collection = collection.map(entry => (entry._1, entry._2.map(x => x.toLowerCase())))
         return this
     }
+
+    def removeRegexMatches(regex: scala.util.matching.Regex) : TweetCollection = {
+        println("Removing regex")
+        collection = collection.map(entry => (entry._1, entry._2.filter(x => ! regex.pattern.matcher(x).matches))
+        return this
+    }
+
+    def removeRegexMatches(regex: scala.util.matching.Regex) : TweetCollection = {
+        println("Removing regex")
+        collection = collection.map(entry => (entry._1, entry._2.filter(x => regex.pattern.matcher(x).matches))
+        return this
+    }
 }

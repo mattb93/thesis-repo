@@ -3,9 +3,10 @@ import edu.vt.dlib.api.pipeline.Runnable
 /*
  * Word count example code. Extends runnable, which means it can be passed into the batch runner.
  */
-class WordCounter() extends Runnable {
+class WordCounterExample() extends Runnable {
     import java.io._
     import edu.vt.dlib.api.io.TweetCollection
+    import edu.vt.dlib.api.tools.WordCounter
 
     /*
      * Run method required by the runnable trait. Must take a TweetCollection as a parameter.
@@ -14,15 +15,9 @@ class WordCounter() extends Runnable {
         println("Processing collection number " + collection.collectionId)
 
         // The methods chained here are provided by the dlib api. We take the collection and run it through
-        // some of the cleaning methods, then finally get the resulting collection in plain text form.
-        val counts = collection.removeStopWords().removeRTs().toLowerCase().getPlainText()
-        
-        // Run the word count analysis
-        counts.flatMap(line => line.split(" "))
-                    .map(word => (word, 1))
-                    .reduceByKey(_ + _)
-                    .sortBy(_._2, false)
-                    .collect();
+        // some of the cleaning methods, then pass it to the counting tool.
+        val counter = new WordCounter()
+        val counts = counter.count(collection.removeStopWords().removeRTs().toLowerCase()).collect()
 
         // Write the results back to local disk using standard java io
         val resultFile = new File("counts/z_" + collection.collectionId)
@@ -46,4 +41,4 @@ val collections = Array("41", "45", "128", "145", "157", "443")
 val runner = new Runner(sc, sqlContext)
 
 // Run the analysis by calling the run method and passing it the runnable we created above.
-runner.run(collections, new WordCounter())
+runner.run(collections, new WordCounterExample())
