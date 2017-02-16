@@ -87,9 +87,11 @@ Note that the cleaning methods modify the internal collection, so whenever you c
 ## Tools
 
 The library also provides a set of tools to help with your analyses. Currently implemented tools include:
+
 1. A word counter to count the frequency of tokens in the collection
 2. A Feature extractor to extract information from the tweets
 
 Planned tools include:
+
 1. A wrapper for the Stanford Named Entity Recognizer
 2. Sentiment and topic analysis tools
