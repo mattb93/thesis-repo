@@ -1,5 +1,5 @@
 import edu.vt.dlib.api.pipeline.Runnable
-
+import edu.vt.dlib.api.pipeline.Runner
 
 /*
  * Proof of concept for feature extraction tool. Uses the API's feature extraction tool
@@ -7,6 +7,7 @@ import edu.vt.dlib.api.pipeline.Runnable
  */
 class FeatureExtractorExample() extends Runnable {
 	import edu.vt.dlib.api.tools.FeatureExtractor
+    import edu.vt.dlib.api.io.TweetCollection
 	import edu.vt.dlib.api.io.DataWriter
 
 	def run(collection: TweetCollection) {
@@ -16,17 +17,18 @@ class FeatureExtractorExample() extends Runnable {
 
 		val featureExtractor = new FeatureExtractor(collection)
 
-		val mentions = featureExtractor.extractMentions()
 		val hashtags = featureExtractor.extractHashtags()
+        val mentions = featureExtractor.extractMentions()
+		//val hashtags = featureExtractor.extractHashtags()
 		val urls = featureExtractor.extractURLs()
-		val positive = featureExtractor.extractRegexMatches(""":)""".r)
+		val positive = featureExtractor.extractRegexMatches(""":\)""".r)
 
 		val dataWriter = new DataWriter()
 
-		dataWriter.writeToFile(mentions, "testResuls/" + collection.collectionId + "_mentions")
-		dataWriter.writeToFile(mentions, "testResuls/" + collection.collectionId + "_hashtags")
-		dataWriter.writeToFile(mentions, "testResuls/" + collection.collectionId + "_urls")
-		dataWriter.writeToFile(mentions, "testResuls/" + collection.collectionId + "_positives")
+		dataWriter.writeToFile(mentions, "results/FeatureExtractionExample/" + collection.collectionId + "_mentions")
+		dataWriter.writeToFile(mentions, "results/FeatureExtractionExample/" + collection.collectionId + "_hashtags")
+		dataWriter.writeToFile(mentions, "results/FeatureExtractionExample/" + collection.collectionId + "_urls")
+		dataWriter.writeToFile(mentions, "results/FeatureExtractionExample/" + collection.collectionId + "_positives")
 	}
 }
 

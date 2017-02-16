@@ -20,7 +20,7 @@ class WordCounterExample() extends Runnable {
         val counts = counter.count(collection.removeStopWords().removeRTs().toLowerCase()).collect()
 
         // Write the results back to local disk using standard java io
-        val resultFile = new File("counts/z_" + collection.collectionId)
+        val resultFile = new File("results/WordCounterExample/z_" + collection.collectionId)
         val bufferedWriter = new BufferedWriter(new FileWriter(resultFile))
         for(count <- counts) {
             //println(count)

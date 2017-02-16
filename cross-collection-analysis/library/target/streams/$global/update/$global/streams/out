@@ -1,4 +1,4 @@
-[0m[[0minfo[0m] [0mUpdating {file:/home/mattb93/thesis-repo/cross-collection-analysis/lib/}lib...[0m
+[0m[[0minfo[0m] [0mUpdating {file:/home/mattb93/thesis-repo/cross-collection-analysis/library/}library...[0m
 [0m[[0mdebug[0m] [0m:: resolving dependencies :: dlrl-library#dlrl-library_2.10;1.0[0m
 [0m[[0mdebug[0m] [0m	confs: [compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, sources, docs, pom, scala-tool][0m
 [0m[[0mdebug[0m] [0m	validate = true[0m
@@ -7,7 +7,7 @@
 [0m[[0mdebug[0m] [0m== resolving dependencies for dlrl-library#dlrl-library_2.10;1.0 [compile][0m
 [0m[[0mdebug[0m] [0m== resolving dependencies dlrl-library#dlrl-library_2.10;1.0->org.scala-lang#scala-library;2.10.4 [compile->default(compile)][0m
 [0m[[0minfo[0m] [0mResolving org.scala-lang#scala-library;2.10.4 ...[0m
-[0m[[0mdebug[0m] [0msbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@1723a27b[0m
+[0m[[0mdebug[0m] [0msbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@538ab4bc[0m
 [0m[[0mdebug[0m] [0msbt-chain: module revision found in cache: org.scala-lang#scala-library;2.10.4[0m
 [0m[[0mdebug[0m] [0m	found org.scala-lang#scala-library;2.10.4 in sbt-chain[0m
 [0m[[0mdebug[0m] [0m	[2.10.4] org.scala-lang#scala-library;2.10.4[0m
@@ -18680,19 +18680,19 @@
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.scala-lang#scala-compiler;2.10.4!scala-compiler.jar[0m
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.scala-lang#jline;2.10.4!jline.jar[0m
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.fusesource.jansi#jansi;1.4!jansi.jar[0m
-[0m[[0mdebug[0m] [0m:: resolution report :: resolve 3309ms :: artifacts dl 99ms[0m
-[0m[[0mdebug[0m] [0m	report for dlrl-library#dlrl-library_2.10;1.0 compile produced in /home/mattb93/thesis-repo/cross-collection-analysis/lib/target/resolution-cache/reports/dlrl-library-dlrl-library_2.10-compile.xml[0m
-[0m[[0mdebug[0m] [0m	report for dlrl-library#dlrl-library_2.10;1.0 runtime produced in /home/mattb93/thesis-repo/cross-collection-analysis/lib/target/resolution-cache/reports/dlrl-library-dlrl-library_2.10-runtime.xml[0m
-[0m[[0mdebug[0m] [0m	report for dlrl-library#dlrl-library_2.10;1.0 test produced in /home/mattb93/thesis-repo/cross-collection-analysis/lib/target/resolution-cache/reports/dlrl-library-dlrl-library_2.10-test.xml[0m
-[0m[[0mdebug[0m] [0m	report for dlrl-library#dlrl-library_2.10;1.0 provided produced in /home/mattb93/thesis-repo/cross-collection-analysis/lib/target/resolution-cache/reports/dlrl-library-dlrl-library_2.10-provided.xml[0m
-[0m[[0mdebug[0m] [0m	report for dlrl-library#dlrl-library_2.10;1.0 optional produced in /home/mattb93/thesis-repo/cross-collection-analysis/lib/target/resolution-cache/reports/dlrl-library-dlrl-library_2.10-optional.xml[0m
-[0m[[0mdebug[0m] [0m	report for dlrl-library#dlrl-library_2.10;1.0 compile-internal produced in /home/mattb93/thesis-repo/cross-collection-analysis/lib/target/resolution-cache/reports/dlrl-library-dlrl-library_2.10-compile-internal.xml[0m
-[0m[[0mdebug[0m] [0m	report for dlrl-library#dlrl-library_2.10;1.0 runtime-internal produced in /home/mattb93/thesis-repo/cross-collection-analysis/lib/target/resolution-cache/reports/dlrl-library-dlrl-library_2.10-runtime-internal.xml[0m
-[0m[[0mdebug[0m] [0m	report for dlrl-library#dlrl-library_2.10;1.0 test-internal produced in /home/mattb93/thesis-repo/cross-collection-analysis/lib/target/resolution-cache/reports/dlrl-library-dlrl-library_2.10-test-internal.xml[0m
-[0m[[0mdebug[0m] [0m	report for dlrl-library#dlrl-library_2.10;1.0 plugin produced in /home/mattb93/thesis-repo/cross-collection-analysis/lib/target/resolution-cache/reports/dlrl-library-dlrl-library_2.10-plugin.xml[0m
-[0m[[0mdebug[0m] [0m	report for dlrl-library#dlrl-library_2.10;1.0 sources produced in /home/mattb93/thesis-repo/cross-collection-analysis/lib/target/resolution-cache/reports/dlrl-library-dlrl-library_2.10-sources.xml[0m
-[0m[[0mdebug[0m] [0m	report for dlrl-library#dlrl-library_2.10;1.0 docs produced in /home/mattb93/thesis-repo/cross-collection-analysis/lib/target/resolution-cache/reports/dlrl-library-dlrl-library_2.10-docs.xml[0m
-[0m[[0mdebug[0m] [0m	report for dlrl-library#dlrl-library_2.10;1.0 pom produced in /home/mattb93/thesis-repo/cross-collection-analysis/lib/target/resolution-cache/reports/dlrl-library-dlrl-library_2.10-pom.xml[0m
-[0m[[0mdebug[0m] [0m	report for dlrl-library#dlrl-library_2.10;1.0 scala-tool produced in /home/mattb93/thesis-repo/cross-collection-analysis/lib/target/resolution-cache/reports/dlrl-library-dlrl-library_2.10-scala-tool.xml[0m
-[0m[[0mdebug[0m] [0m	resolve done (3309ms resolve - 99ms download)[0m
+[0m[[0mdebug[0m] [0m:: resolution report :: resolve 3269ms :: artifacts dl 93ms[0m
+[0m[[0mdebug[0m] [0m	report for dlrl-library#dlrl-library_2.10;1.0 compile produced in /home/mattb93/thesis-repo/cross-collection-analysis/library/target/resolution-cache/reports/dlrl-library-dlrl-library_2.10-compile.xml[0m
+[0m[[0mdebug[0m] [0m	report for dlrl-library#dlrl-library_2.10;1.0 runtime produced in /home/mattb93/thesis-repo/cross-collection-analysis/library/target/resolution-cache/reports/dlrl-library-dlrl-library_2.10-runtime.xml[0m
+[0m[[0mdebug[0m] [0m	report for dlrl-library#dlrl-library_2.10;1.0 test produced in /home/mattb93/thesis-repo/cross-collection-analysis/library/target/resolution-cache/reports/dlrl-library-dlrl-library_2.10-test.xml[0m
+[0m[[0mdebug[0m] [0m	report for dlrl-library#dlrl-library_2.10;1.0 provided produced in /home/mattb93/thesis-repo/cross-collection-analysis/library/target/resolution-cache/reports/dlrl-library-dlrl-library_2.10-provided.xml[0m
+[0m[[0mdebug[0m] [0m	report for dlrl-library#dlrl-library_2.10;1.0 optional produced in /home/mattb93/thesis-repo/cross-collection-analysis/library/target/resolution-cache/reports/dlrl-library-dlrl-library_2.10-optional.xml[0m
+[0m[[0mdebug[0m] [0m	report for dlrl-library#dlrl-library_2.10;1.0 compile-internal produced in /home/mattb93/thesis-repo/cross-collection-analysis/library/target/resolution-cache/reports/dlrl-library-dlrl-library_2.10-compile-internal.xml[0m
+[0m[[0mdebug[0m] [0m	report for dlrl-library#dlrl-library_2.10;1.0 runtime-internal produced in /home/mattb93/thesis-repo/cross-collection-analysis/library/target/resolution-cache/reports/dlrl-library-dlrl-library_2.10-runtime-internal.xml[0m
+[0m[[0mdebug[0m] [0m	report for dlrl-library#dlrl-library_2.10;1.0 test-internal produced in /home/mattb93/thesis-repo/cross-collection-analysis/library/target/resolution-cache/reports/dlrl-library-dlrl-library_2.10-test-internal.xml[0m
+[0m[[0mdebug[0m] [0m	report for dlrl-library#dlrl-library_2.10;1.0 plugin produced in /home/mattb93/thesis-repo/cross-collection-analysis/library/target/resolution-cache/reports/dlrl-library-dlrl-library_2.10-plugin.xml[0m
+[0m[[0mdebug[0m] [0m	report for dlrl-library#dlrl-library_2.10;1.0 sources produced in /home/mattb93/thesis-repo/cross-collection-analysis/library/target/resolution-cache/reports/dlrl-library-dlrl-library_2.10-sources.xml[0m
+[0m[[0mdebug[0m] [0m	report for dlrl-library#dlrl-library_2.10;1.0 docs produced in /home/mattb93/thesis-repo/cross-collection-analysis/library/target/resolution-cache/reports/dlrl-library-dlrl-library_2.10-docs.xml[0m
+[0m[[0mdebug[0m] [0m	report for dlrl-library#dlrl-library_2.10;1.0 pom produced in /home/mattb93/thesis-repo/cross-collection-analysis/library/target/resolution-cache/reports/dlrl-library-dlrl-library_2.10-pom.xml[0m
+[0m[[0mdebug[0m] [0m	report for dlrl-library#dlrl-library_2.10;1.0 scala-tool produced in /home/mattb93/thesis-repo/cross-collection-analysis/library/target/resolution-cache/reports/dlrl-library-dlrl-library_2.10-scala-tool.xml[0m
+[0m[[0mdebug[0m] [0m	resolve done (3269ms resolve - 93ms download)[0m
 [0m[[0minfo[0m] [0mDone updating.[0m

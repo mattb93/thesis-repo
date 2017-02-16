@@ -4,6 +4,8 @@ import edu.vt.dlib.api.io.TweetCollection
 
 class WordCounter() {
 
+    import org.apache.spark.rdd.RDD
+
 	def count(collection: TweetCollection) : RDD[(String, Int)] = {
 
         return collection.getPlainText()
