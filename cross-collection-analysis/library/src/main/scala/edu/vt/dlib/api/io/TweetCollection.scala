@@ -1,12 +1,16 @@
 package edu.vt.dlib.api.io
 
+import org.apache.spark.SparkContext
+import org.apache.spark.sql.SQLContext
+import org.apache.spark.rdd.RDD
+
 /*
  * Provides convenience methods to read tweet data from and write tweet data to the DLRL cluster.
  * Reads from avro files and provides methods to map data to more useful formats.
  * 
  */
-class TweetCollection(var collectionId: String, val sc: org.apache.spark.SparkContext, val sqlContext: org.apache.spark.sql.SQLContext) {
-    
+//class TweetCollection(var collectionId: String, val sc: org.apache.spark.SparkContext, val sqlContext: org.apache.spark.sql.SQLContext) {
+class TweetCollection(var path: String, val sc: org.apache.spark.SparkContext, val sqlContext: org.apache.spark.sql.SQLContext) {
     import org.apache.avro.mapred.AvroInputFormat
     import org.apache.avro.mapred.AvroWrapper
     import org.apache.avro.generic.GenericRecord
@@ -18,9 +22,12 @@ class TweetCollection(var collectionId: String, val sc: org.apache.spark.SparkCo
     import sqlContext.implicits._
 
 
-    val path = "/collections/tweets/z_" + collectionId + "/part-m-00000.avro"
-    val records = sc.hadoopFile[AvroWrapper[GenericRecord], NullWritable, AvroInputFormat[GenericRecord]](path)
-    var collection = records.map(lambda => (new String(lambda._1.datum.get("id").toString), new String(lambda._1.datum.get("text").toString).split(" ")))
+    //val path = "/collections/tweets/z_" + collectionId + "/part-m-00000.avro"
+    //val records = sc.hadoopFile[AvroWrapper[GenericRecord], NullWritable, AvroInputFormat[GenericRecord]](path)
+    //var collection = records.map(lambda => (new String(lambda._1.datum.get("id").toString), new String(lambda._1.datum.get("text").toString).split(" ")))
+
+    val records = sc.textFile("file:///home/mattb93/thesis-repo/cross-collection-analysis/" + path)
+    var collection = records.map(line=> line.split(", ")).map(elem => elem(1).split(" ")).zipWithIndex().map(elem => (elem._2.toString, elem._1))
 
     def getCollection() : RDD[(String, Array[String])] = {
         return collection

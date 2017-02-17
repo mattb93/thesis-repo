@@ -17,18 +17,17 @@ class FeatureExtractorExample() extends Runnable {
 
 		val featureExtractor = new FeatureExtractor(collection)
 
-		val hashtags = featureExtractor.extractHashtags()
         val mentions = featureExtractor.extractMentions()
-		//val hashtags = featureExtractor.extractHashtags()
+		val hashtags = featureExtractor.extractHashtags()
 		val urls = featureExtractor.extractURLs()
 		val positive = featureExtractor.extractRegexMatches(""":\)""".r)
 
 		val dataWriter = new DataWriter()
 
 		dataWriter.writeToFile(mentions, "results/FeatureExtractionExample/" + collection.collectionId + "_mentions")
-		dataWriter.writeToFile(mentions, "results/FeatureExtractionExample/" + collection.collectionId + "_hashtags")
-		dataWriter.writeToFile(mentions, "results/FeatureExtractionExample/" + collection.collectionId + "_urls")
-		dataWriter.writeToFile(mentions, "results/FeatureExtractionExample/" + collection.collectionId + "_positives")
+		dataWriter.writeToFile(hashtags, "results/FeatureExtractionExample/" + collection.collectionId + "_hashtags")
+		dataWriter.writeToFile(urls, "results/FeatureExtractionExample/" + collection.collectionId + "_urls")
+		dataWriter.writeToFile(positive, "results/FeatureExtractionExample/" + collection.collectionId + "_positives")
 	}
 }
 
