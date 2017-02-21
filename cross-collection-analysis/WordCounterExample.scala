@@ -38,7 +38,7 @@ val collections = Array("41", "45", "128", "145", "157", "443")
 
 // Create a new runner to run the analysis on the batch of collections.
 // Pass it the Spark Context and SQL Context provided by the spark shell.
-val runner = new Runner(sc, sqlContext)
+val runner = new HDFSRunner(sc, sqlContext)
 
 // Run the analysis by calling the run method and passing it the runnable we created above.
-runner.run(collections, new WordCounterExample())
+runner.run(new WordCounterExample(), collections)

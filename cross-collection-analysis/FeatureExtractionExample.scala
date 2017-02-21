@@ -37,6 +37,6 @@ class FeatureExtractorExample() extends Runnable {
 val collections = Array("41")
 
 // Create a new runner with the collection numbers and a word counter to run
-val runner = new Runner(sc, sqlContext)
+val runner = new HDFSRunner(sc, sqlContext)
 
-runner.run(collections, new FeatureExtractorExample())
+runner.run(new FeatureExtractorExample(), collections)
