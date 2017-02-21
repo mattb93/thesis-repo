@@ -5,7 +5,7 @@ package edu.vt.dlib.api.io
  * Reads from avro files and provides methods to map data to more useful formats.
  * 
  */
-abstract class TweetCollection(val sc: org.apache.spark.SparkContext, val sqlContext: org.apache.spark.sql.SQLContext) {
+abstract class TweetCollection(val collectionID: String, val sc: org.apache.spark.SparkContext, val sqlContext: org.apache.spark.sql.SQLContext) {
     
     import org.apache.spark.rdd.RDD
     import org.apache.spark.ml.feature.StopWordsRemover

@@ -1,6 +1,6 @@
 package edu.vt.dlib.api.io
 
-class HDFSTweetCollection(sc: org.apache.spark.SparkContext, sqlContext: org.apache.spark.sql.SQLContext, var collectionId: String) extends TweetCollection(sc, sqlContext) {
+class HDFSTweetCollection(collectionID: String, sc: org.apache.spark.SparkContext, sqlContext: org.apache.spark.sql.SQLContext, var collectionId: String) extends TweetCollection(collectionID, sc, sqlContext) {
     
     import org.apache.avro.mapred.AvroInputFormat
     import org.apache.avro.mapred.AvroWrapper

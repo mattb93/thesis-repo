@@ -12,7 +12,7 @@ class WordCounterExample() extends Runnable {
      * Run method required by the runnable trait. Must take a TweetCollection as a parameter.
      */
     def run(collection: TweetCollection) {
-        println("Processing collection number " + collection.collectionId)
+        println("Processing collection number " + collection.collectionID)
 
         // The methods chained here are provided by the dlib api. We take the collection and run it through
         // some of the cleaning methods, then pass it to the counting tool.
@@ -20,7 +20,7 @@ class WordCounterExample() extends Runnable {
         val counts = counter.count(collection.removeStopWords().removeRTs().toLowerCase()).collect()
 
         // Write the results back to local disk using standard java io
-        val resultFile = new File("results/WordCounterExample/z_" + collection.collectionId)
+        val resultFile = new File("results/WordCounterExample/z_" + collection.collectionID)
         val bufferedWriter = new BufferedWriter(new FileWriter(resultFile))
         for(count <- counts) {
             //println(count)
@@ -31,7 +31,7 @@ class WordCounterExample() extends Runnable {
 }
 
 // Import Runner so we can instantiate one below
-import edu.vt.dlib.api.pipeline.Runner
+import edu.vt.dlib.api.pipeline.HDFSRunner
 
 // Define collections to be pulled from hbase.
 val collections = Array("41", "45", "128", "145", "157", "443")
