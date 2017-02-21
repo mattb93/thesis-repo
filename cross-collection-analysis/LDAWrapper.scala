@@ -5,15 +5,20 @@ class LDAWrapper() {
   import org.apache.spark.rdd.RDD
   import java.io._
 
-  def analyze(collectionNumber: String, termsToIgnore: Array[String], numTopics: Int) = {
-    // Get all the tweets
-    val corpus = sc.textFile("hdfs:///user/mattb93/processedCollections/z_" + collectionNumber + "-textOnly-noStopWords-noRT-noMentions-noURLs")
+  import edu.vt.dlib.api.io.TweetCollection
+  import edu.vt.dlib.api.tools.WordCounter
 
+  def analyze(file: String, termsToIgnore: Array[String], numTopics: Int) = {
+    // Get all the tweets
+    //val corpus = sc.textFile("hdfs:///user/mattb93/processedCollections/z_" + collectionNumber + "-textOnly-noStopWords-noRT-noMentions-noURLs")
+
+    val collection = new CSVTweetCollection(sc, sqlContext, file).removeStopWords().removeRTs().removeMentions().removeHashtags().removeURLs().removePunctuation().toLowerCase()
     // Get the list of (term, count) pairs
-    val termCounts = corpus.flatMap(line => line.split(" "))
-      .map(word => (word, 1))
-      .reduceByKey(_+_)
-      .sortBy(_._2, false);
+    //val termCounts = collection.getCollection.flatMap(line => line.split(" "))
+    //  .map(word => (word, 1))
+    //  .reduceByKey(_+_)
+    //  .sortBy(_._2, false);
+    val termCounts = new WordCounter().count(collection)
 
     // Collect all the individual words
     val vocabArray: Array[String] = termCounts.map(_._1).collect()
