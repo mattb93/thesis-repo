@@ -5,19 +5,15 @@ package edu.vt.dlib.api.io
  * Reads from avro files and provides methods to map data to more useful formats.
  * 
  */
-//class TweetCollection(var collectionId: String, val sc: org.apache.spark.SparkContext, val sqlContext: org.apache.spark.sql.SQLContext) {
-class TweetCollection(var path: String, val sc: org.apache.spark.SparkContext, val sqlContext: org.apache.spark.sql.SQLContext) {
-    import org.apache.avro.mapred.AvroInputFormat
-    import org.apache.avro.mapred.AvroWrapper
-    import org.apache.avro.generic.GenericRecord
+abstract class TweetCollection(val sc: org.apache.spark.SparkContext, val sqlContext: org.apache.spark.sql.SQLContext) {
+    
     import org.apache.spark.rdd.RDD
     import org.apache.spark.ml.feature.StopWordsRemover
-    import org.apache.hadoop.io.NullWritable
     import scala.collection.mutable.WrappedArray
     
     import sqlContext.implicits._
 
-    var collection
+    var collection: RDD[(String, Array[String])];
 
     def getCollection() : RDD[(String, Array[String])] = {
         return collection

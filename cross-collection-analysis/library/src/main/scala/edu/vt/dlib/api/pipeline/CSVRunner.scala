@@ -8,7 +8,7 @@ class CSVRunner(val sc: org.apache.spark.SparkContext, val sqlContext: org.apach
 	def run(r: Runnable, paths: Array[String], textColumn: Int = 1, idColumn: Int = 0) {
 		for(path <- paths) {
 			
-			var collection = new HDFSTweetCollection(sc, sqlContext, path, textColumn, idColumn)
+			var collection = new CSVTweetCollection(sc, sqlContext, path, textColumn, idColumn)
 			r.run(collection)
 		}
 	}
