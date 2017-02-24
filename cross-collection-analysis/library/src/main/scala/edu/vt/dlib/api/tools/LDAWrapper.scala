@@ -1,6 +1,8 @@
 package edu.vt.dlib.api.tools
 
-class LDAWrapper() {
+import java.io.Serializable
+
+class LDAWrapper() extends Serializable{
 	import edu.vt.dlib.api.io.TweetCollection
 	import edu.vt.dlib.api.tools.WordCounter
 
@@ -10,8 +12,8 @@ class LDAWrapper() {
 	import org.apache.spark.rdd.RDD
 
 	// LDA parameters. Can be set before running.
-	var maxIterations: Int = 100
-	var numTopics: Int = 5
+	var maxIterations = 100
+	var numTopics = 5
 	var ldaOptimizer: String = "em"
 	var termsToIgnore: Array[String] = Array()
 
