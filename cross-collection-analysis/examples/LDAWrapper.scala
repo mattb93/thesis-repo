@@ -8,6 +8,7 @@ class LDAWrapper() {
   import edu.vt.dlib.api.io.SVTweetCollection
   import edu.vt.dlib.api.tools.WordCounter
 
+  // This will eventually be replaced by the tools implementation
   def analyze(file: String, termsToIgnore: Array[String], numTopics: Int) = {
     
     val rawCollection = new SVTweetCollection("AT", sc, sqlContext, file, "\t")
