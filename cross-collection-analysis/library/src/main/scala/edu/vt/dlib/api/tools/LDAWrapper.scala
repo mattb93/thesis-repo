@@ -11,6 +11,7 @@ class LDAWrapper() extends Serializable{
 	import org.apache.spark.mllib.linalg.{Vector, Vectors}
 	import org.apache.spark.rdd.RDD
 
+	import java.io._
 	// LDA parameters. Can be set before running.
 	var maxIterations = 100
 	var numTopics = 5
@@ -52,5 +53,23 @@ class LDAWrapper() extends Serializable{
 	    val result: Array[(Array[String], Array[Double])] = topicIndices.map { case (termIndices, weights) => (termIndices.map(index => vocabArray(index)), weights)}
 
 	    return result
+	}
+
+	def writeToLocalFile(path: String, topcs: Array[(Array[String], Array[Double])]) = {
+		val topicFile = new File(path)
+        
+        val bufferedWriterTopics = new BufferedWriter(new FileWriter(topicFile))
+        println("Writing topics to local file")
+        var topicNum = 1;
+        topics.foreach{ case(terms, weights) =>
+            bufferedWriterTopics.write("Topic #" + topicNum + "\n")
+            topicNum = topicNum + 1
+            terms.zip(weights).foreach{ case(term, weight) =>
+                bufferedWriterTopics.write(term + " : " + weight + "\n")
+            }
+            bufferedWriterTopics.write("\n")
+        }
+
+        bufferedWriterTopics.close()
 	}
 }

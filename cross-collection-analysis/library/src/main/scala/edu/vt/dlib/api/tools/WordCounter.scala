@@ -5,6 +5,8 @@ import edu.vt.dlib.api.io.TweetCollection
 class WordCounter() {
 
     import org.apache.spark.rdd.RDD
+    
+    import java.io._
 
 	def count(collection: TweetCollection) : RDD[(String, Int)] = {
 
@@ -13,5 +15,16 @@ class WordCounter() {
                     .map(word => (word, 1))
                     .reduceByKey(_ + _)
                     .sortBy(_._2, false);
+	}
+
+	def writeToLocalFile(path: String, counts: RDD[(String, Int)]) = {
+		// Write the results back to local disk using standard java io
+        val countFile = new File(path)
+        val bufferedWriterCounts = new BufferedWriter(new FileWriter(countFile))
+        println("Writing counts to local file")
+        for(count <- counts.collect()) {
+            bufferedWriterCounts.write(count._1 + "\t" + count._2 + "\n")
+        }
+        bufferedWriterCounts.close()
 	}
 }
