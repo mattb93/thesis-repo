@@ -7,21 +7,21 @@ class FeatureExtractor(collection: TweetCollection) {
     import org.apache.spark.rdd.RDD
 
 	// Create a dataframe to hold the collected features
-	val features = collection.getTextArraysID()
+	val features = collection.getPlainTextID()
 
-	def extractMentions() : RDD[(String, Array[String])] = {
-		return features.map(entry => (entry._1, entry._2.filter(x => """\"*@.*""".r.pattern.matcher(x).matches)))
+	def extractMentions() : RDD[(String, String)] = {
+		return features.filter(entry => """\"*@.*""".r.pattern.matcher(entry._2).matches)
 	}
 
-	def extractHashtags() : RDD[(String, Array[String])] = {
-		return features.map(entry => (entry._1, entry._2.filter(x => """#.*""".r.pattern.matcher(x).matches)))
+	def extractHashtags() : RDD[(String, String)] = {
+		return features.filter(entry => """#.*""".r.pattern.matcher(entry._2).matches)
 	}
 
-	def extractURLs() : RDD[(String, Array[String])] = {
-		return features.map(entry => (entry._1, entry._2.filter(x => """.*http.*""".r.pattern.matcher(x).matches)))
+	def extractURLs() : RDD[(String, String)] = {
+		return features.filter(entry => """.*http.*""".r.pattern.matcher(entry._2).matches)
 	}
 
-	def extractRegexMatches(regex: scala.util.matching.Regex) : RDD[(String, Array[String])] = {
-		return features.map(entry => (entry._1, entry._2.filter(x => regex.pattern.matcher(x).matches)))
+	def extractRegexMatches(regex: scala.util.matching.Regex) : RDD[(String, String)] = {
+		return features.filter(entry => regex.pattern.matcher(entry._2).matches)
 	}
 }
