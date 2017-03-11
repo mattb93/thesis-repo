@@ -1,5 +1,5 @@
 import edu.vt.dlib.api.pipeline.Runnable
-import edu.vt.dlib.api.pipeline.Runner
+import edu.vt.dlib.api.pipeline.HDFSRunner
 
 /*
  * Proof of concept for feature extraction tool. Uses the API's feature extraction tool
@@ -11,7 +11,7 @@ class FeatureExtractorExample() extends Runnable {
 	import edu.vt.dlib.api.io.DataWriter
 
 	def run(collection: TweetCollection) {
-		println("Processiong collection number " + collection.collectionId)
+		println("Processiong collection: " + collection.collectionID)
 
 		collection.removeStopWords().removeRTs().toLowerCase()
 
@@ -20,14 +20,14 @@ class FeatureExtractorExample() extends Runnable {
         val mentions = featureExtractor.extractMentions()
 		val hashtags = featureExtractor.extractHashtags()
 		val urls = featureExtractor.extractURLs()
-		val positive = featureExtractor.extractRegexMatches(""":\)""".r)
+		val negative = featureExtractor.extractToken(":(")
 
 		val dataWriter = new DataWriter()
 
-		dataWriter.writeToFile(mentions, "results/FeatureExtractionExample/" + collection.collectionId + "_mentions")
-		dataWriter.writeToFile(hashtags, "results/FeatureExtractionExample/" + collection.collectionId + "_hashtags")
-		dataWriter.writeToFile(urls, "results/FeatureExtractionExample/" + collection.collectionId + "_urls")
-		dataWriter.writeToFile(positive, "results/FeatureExtractionExample/" + collection.collectionId + "_positives")
+		featureExtractor.writeToLocalFile("results/FeatureExtractionExample/" + collection.collectionID + "_mentions", mentions)
+		featureExtractor.writeToLocalFile("results/FeatureExtractionExample/" + collection.collectionID + "_hashtags", hashtags)
+		featureExtractor.writeToLocalFile("results/FeatureExtractionExample/" + collection.collectionID + "_urls", urls)
+		featureExtractor.writeToLocalFile("results/FeatureExtractionExample/" + collection.collectionID + "_positives", negative)
 	}
 }
 
