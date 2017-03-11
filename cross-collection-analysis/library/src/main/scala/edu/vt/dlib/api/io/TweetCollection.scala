@@ -22,19 +22,19 @@ abstract class TweetCollection(val collectionID: String, @transient val sc: org.
     }
 
     def getPlainText(): RDD[String] = {
-        return collection.map(entry => entry._2.mkString(" "))
+        return collection.filter(entry => ! entry._2.isEmpty).map(entry => entry._2.mkString(" "))
     }
 
     def getPlainTextID() : RDD[(String, String)] = {
-        return collection.map(entry => (entry._1, entry._2.mkString(" ")))
+        return collection.filter(entry => ! entry._2.isEmpty).map(entry => (entry._1, entry._2.mkString(" ")))
     }
 
     def getTextArrays(): RDD[Array[String]] = {
-        return collection.map(entry => entry._2)
+        return collection.filter(entry => ! entry._2.isEmpty).map(entry => entry._2)
     }
 
     def getTextArraysID(): RDD[(String, Array[String])] = {
-        return collection
+        return collection.filter(entry => ! entry._2.isEmpty)
     }
 
     def removeStopWords() : TweetCollection = {
@@ -92,6 +92,12 @@ abstract class TweetCollection(val collectionID: String, @transient val sc: org.
     def removeRegexNonmatches(regex: scala.util.matching.Regex) : TweetCollection = {
         println("Removing regex")
         collection = collection.map(entry => (entry._1, entry._2.filter(x => regex.pattern.matcher(x).matches)))
+        return this
+    }
+
+    def removeTokens(tokensToRemove: Array[String]) : TweetCollection = {
+        println("Removing tokens: [" + tokensToRemove.mkString(", ") + "]")
+        collection = collection.map(entry => (entry._1, entry._2.filter(x => ! tokensToRemove.contains(x))))
         return this
     }
 }
