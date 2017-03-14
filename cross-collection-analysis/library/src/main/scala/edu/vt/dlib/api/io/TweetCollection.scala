@@ -15,6 +15,7 @@ abstract class TweetCollection(val collectionID: String, @transient val sc: org.
     
     import sqlContext.implicits._
 
+    // http://alvinalexander.com/scala/how-to-control-scala-method-scope-object-private-package
     var collection: RDD[(String, Array[String])];
 
     def getCollection() : RDD[(String, Array[String])] = {
