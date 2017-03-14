@@ -11,7 +11,7 @@ import java.io._
 val initialNumSeedWords = 5 // initial number of words to be extracted from self-labeled tweets
 val targetNumSeedWords = 10	// number of seed words to pull from all tweets
 val numIterations = 10		// number of times to repeat searching for new seed words
-val orientationSeed = ":(" // regular expression use to start search
+val orientationSeed = ":)" // regular expression use to start search
 val tokensToDiscard = Array("connecticut", "shooting", "school", "sandy", "hook")
 
 val collectionNumber = "41"
@@ -54,6 +54,6 @@ def printToFile(path: String, content: Array[String]) = {
     bufferedWriter.close()
 }
 
-printToFile("results/" + collectionID + "_orientedTokens_" + numIterations + ".txt", orientedTokens.map(t => t._1 + ", " + t._2))
-printToFile("results/" + collectionID + "_orientedTweets_" + numIterations + ".txt", orientedTweets.collect())
+printToFile("results/" + collectionID + "_orientedTokensPositive_" + numIterations + ".txt", orientedTokens.map(t => t._1 + ", " + t._2))
+printToFile("results/" + collectionID + "_orientedTweetsPositive_" + numIterations + ".txt", orientedTweets.collect())
 
