@@ -11,9 +11,8 @@ import java.io._
 val initialNumSeedWords = 5 // initial number of words to be extracted from self-labeled tweets
 val targetNumSeedWords = 10	// number of seed words to pull from all tweets
 val numIterations = 10		// number of times to repeat searching for new seed words
-val orientationSeed = ":(" // regular expression use to start search
+val orientationSeed = ":("  // regular expression use to start search
 val tokensToDiscard = Array("connecticut", "shooting", "school", "sandy", "hook")
-
 val collectionNumber = "41"
 val collectionID = "NewtownShooting"
 
