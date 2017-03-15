@@ -16,89 +16,90 @@ abstract class TweetCollection(val collectionID: String, @transient val sc: org.
     import sqlContext.implicits._
 
     // http://alvinalexander.com/scala/how-to-control-scala-method-scope-object-private-package
-    var collection: RDD[(String, Array[String])];
+    var collection: RDD[Tweet];
 
-    def getCollection() : RDD[(String, Array[String])] = {
+    def getCollection() : RDD[Tweet] = {
         return collection
     }
 
     def getPlainText(): RDD[String] = {
-        return collection.filter(entry => ! entry._2.isEmpty).map(entry => entry._2.mkString(" "))
+        return collection.filter(tweet => ! tweet.tokens.isEmpty).map(tweet => tweet.tokens.mkString(" "))
     }
 
     def getPlainTextID() : RDD[(String, String)] = {
-        return collection.filter(entry => ! entry._2.isEmpty).map(entry => (entry._1, entry._2.mkString(" ")))
+        return collection.filter(tweet => ! tweet.tokens.isEmpty).map(tweet => (tweet.id, tweet.tokens.mkString(" ")))
     }
 
-    def getTextArrays(): RDD[Array[String]] = {
-        return collection.filter(entry => ! entry._2.isEmpty).map(entry => entry._2)
+    def getTokenArrays(): RDD[Array[String]] = {
+        return collection.filter(tweet => ! tweet.tokens.isEmpty).map(tweet => tweet.tokens)
     }
 
-    def getTextArraysID(): RDD[(String, Array[String])] = {
-        return collection.filter(entry => ! entry._2.isEmpty)
+    def getTokenArraysID(): RDD[(String, Array[String])] = {
+        return collection.filter(tweet => ! tweet.tokrns.isEmpty).map(tweet => (tweet.id, tweet.tokens))
     }
 
     def removeStopWords() : TweetCollection = {
-        println("Removing Stop Words")
+        println("Removing Stop Words NOT CURRENTLY IMPLEMENTED")
 
-        val remover = new StopWordsRemover().setInputCol("raw").setOutputCol("filtered")
-        collection = remover.transform(collection.toDF("id", "raw")).select("id", "filtered").map(row => (row(0).toString, (row(1).asInstanceOf[WrappedArray[String]]).toArray))
+        //val remover = new StopWordsRemover().setInputCol("raw").setOutputCol("filtered")
+        //val rawTextDF = collection.map(tweet => tweet.text).toDF("id", "raw")
+        //collection = remover.transform(collection.map(rawTextDF).select("id", "filtered").map(row => (row(0).toString, (row(1).asInstanceOf[WrappedArray[String]]).toArray))
         return this
     }
 
     def removeRTs() : TweetCollection = {
         println("Removing 'RT' instances")
 
-        collection = collection.map(entry => (entry._1, entry._2.filter(! _.contains("RT"))))
+        collection = collection.foreach(tweet => tweet.tokens.filter(! _ == "RT"))
 
         return this
     }
 
     def removeMentions() : TweetCollection = {
         println("Removing mentions")
-        collection = collection.map(entry => (entry._1, entry._2.filter(x => ! """\"*@.*""".r.pattern.matcher(x).matches)))
+        collection = collection.foreach(tweet => tweet.tokens.filter(x => ! """\"*@.*""".r.pattern.matcher(x).matches))
         return this
     }
 
     def removeHashtags() : TweetCollection = {
         println("Removing hashtags")
-        collection = collection.map(entry => (entry._1, entry._2.filter(x => ! """#.*""".r.pattern.matcher(x).matches)))
+        collection = collection.foreach(tweet => tweet.tokens.filter(x => ! """#.*""".r.pattern.matcher(x).matches))
         return this
     }
 
     def removeURLs() : TweetCollection = {
         println("Removing URLs")
-        collection = collection.map(entry => (entry._1, entry._2.filter(x => ! """.*http.*""".r.pattern.matcher(x).matches)))
+        collection = collection.foreach(tweet => tweet.tokens.filter(x => ! """.*http.*""".r.pattern.matcher(x).matches))
         return this
     }
 
     def removePunctuation() : TweetCollection = {
         println("Removing punctiation")
-        collection = collection.map(entry => (entry._1, entry._2.map(x => x.replaceAll("[^A-Za-z0-9@#]", "")))).filter(entry => entry._2.length > 0)
+        collection = collection.foreach(tweet => tweet.tokens.map(x => x.replaceAll("[^A-Za-z0-9@#]", ""))).filter(tweet => tweet.tokens.length > 0)
         return this
     }
 
     def toLowerCase() : TweetCollection = {
         println("Converting to lowercase")
-        collection = collection.map(entry => (entry._1, entry._2.map(x => x.toLowerCase())))
+        collection = collection.foreach(tweet => tweet.tokens.map(x => x.toLowerCase()))
         return this
     }
 
     def removeRegexMatches(regex: scala.util.matching.Regex) : TweetCollection = {
         println("Removing regex")
-        collection = collection.map(entry => (entry._1, entry._2.filter(x => ! regex.pattern.matcher(x).matches)))
+        collection = collection.foreach(tweet => tweet.tokens.filter(x => ! regex.pattern.matcher(x).matches))
         return this
     }
 
     def removeRegexNonmatches(regex: scala.util.matching.Regex) : TweetCollection = {
         println("Removing regex")
-        collection = collection.map(entry => (entry._1, entry._2.filter(x => regex.pattern.matcher(x).matches)))
+        collection = collection.foreach(tweet => tweet.tokens.filter(x => regex.pattern.matcher(x).matches))
         return this
     }
 
     def removeTokens(tokensToRemove: Array[String]) : TweetCollection = {
         println("Removing tokens: [" + tokensToRemove.mkString(", ") + "]")
-        collection = collection.map(entry => (entry._1, entry._2.filter(x => ! tokensToRemove.contains(x))))
+        collection = collection.foreach(tweet => tweet.tokens.filter(x => ! tokensToRemove.contains(x)))
         return this
     }
 }
