@@ -1,5 +1,4 @@
-import edu.vt.dlib.api.io.TweetCollection
-import edu.vt.dlib.api.io.DataWriter
+import edu.vt.dlib.api.dataStructures.TweetCollection
 import edu.vt.dlib.api.tools.WordCounter
 import edu.vt.dlib.api.tools.FeatureExtractor
 import edu.vt.dlib.api.tools.LDAWrapper
@@ -9,7 +8,6 @@ import edu.vt.dlib.api.pipeline.SVRunner
 
 class MassExtractionExample() extends Runnable {
     	
-	val dataWriter = new DataWriter()
 
 	def run(collection: TweetCollection) = {
 
@@ -22,9 +20,9 @@ class MassExtractionExample() extends Runnable {
 		val urls = featureExtractor.extractURLs()
 		//val positive = featureExtractor.extractRegexMatches(""":\)""".r)
 
-		dataWriter.writeToFile(mentions, "results/MassExtractionExample/" + collection.collectionID + "_mentions")
-		dataWriter.writeToFile(hashtags, "results/MassExtractionExample/" + collection.collectionID + "_hashtags")
-		dataWriter.writeToFile(urls, "results/MassExtractionExample/" + collection.collectionID + "_urls")
+		//dataWriter.writeToFile(mentions, "results/MassExtractionExample/" + collection.collectionID + "_mentions")
+		//dataWriter.writeToFile(hashtags, "results/MassExtractionExample/" + collection.collectionID + "_hashtags")
+		//dataWriter.writeToFile(urls, "results/MassExtractionExample/" + collection.collectionID + "_urls")
 		//dataWriter.writeToFile(positive, "results/MassExtractionExample/" + collection.collectionID + "_positives")
 
 		collection.removeMentions()

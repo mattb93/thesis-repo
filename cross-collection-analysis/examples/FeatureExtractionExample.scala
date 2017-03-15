@@ -7,8 +7,7 @@ import edu.vt.dlib.api.pipeline.HDFSRunner
  */
 class FeatureExtractorExample() extends Runnable {
 	import edu.vt.dlib.api.tools.FeatureExtractor
-    import edu.vt.dlib.api.io.TweetCollection
-	import edu.vt.dlib.api.io.DataWriter
+    import edu.vt.dlib.api.dataStructures.TweetCollection
 
 	def run(collection: TweetCollection) {
 		println("Processiong collection: " + collection.collectionID)
@@ -22,7 +21,6 @@ class FeatureExtractorExample() extends Runnable {
 		val urls = featureExtractor.extractURLs()
 		val negative = featureExtractor.extractToken(":(")
 
-		val dataWriter = new DataWriter()
 
 		featureExtractor.writeToLocalFile("results/FeatureExtractionExample/" + collection.collectionID + "_mentions", mentions)
 		featureExtractor.writeToLocalFile("results/FeatureExtractionExample/" + collection.collectionID + "_hashtags", hashtags)

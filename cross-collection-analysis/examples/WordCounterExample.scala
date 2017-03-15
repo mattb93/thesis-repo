@@ -5,7 +5,7 @@ import edu.vt.dlib.api.pipeline.Runnable
  */
 class WordCounterExample() extends Runnable {
     import java.io._
-    import edu.vt.dlib.api.io.TweetCollection
+    import edu.vt.dlib.api.dataStructures.TweetCollection
     import edu.vt.dlib.api.tools.WordCounter
 
     /*

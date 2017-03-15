@@ -3,7 +3,7 @@ package edu.vt.dlib.api.tools
 import java.io.Serializable
 
 class LDAWrapper() extends Serializable{
-	import edu.vt.dlib.api.io.TweetCollection
+	import edu.vt.dlib.api.dataStructures.TweetCollection
 	import edu.vt.dlib.api.tools.WordCounter
 
 	import scala.collection.mutable

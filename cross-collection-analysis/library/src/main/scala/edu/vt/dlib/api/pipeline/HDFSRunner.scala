@@ -1,7 +1,7 @@
 package edu.vt.dlib.api.pipeline
 
 //import edu.vt.dlib.api.pipeline.Runnable
-import edu.vt.dlib.api.io._
+import edu.vt.dlib.api.dataStructures.HDFSTweetCollection
 
 class HDFSRunner(val sc: org.apache.spark.SparkContext, val sqlContext: org.apache.spark.sql.SQLContext) {
 	def run(r: Runnable, collectionIDs: Array[String]) {

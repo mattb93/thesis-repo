@@ -1,6 +1,6 @@
 package edu.vt.dlib.api.tools
 
-import edu.vt.dlib.api.io.TweetCollection
+import edu.vt.dlib.api.dataStructures.TweetCollection
 
 class FeatureExtractor(collection: TweetCollection) {
 
