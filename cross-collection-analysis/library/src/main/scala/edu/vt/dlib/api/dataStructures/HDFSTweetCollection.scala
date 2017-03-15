@@ -1,4 +1,4 @@
-package edu.vt.dlib.api.io
+package edu.vt.dlib.api.dataStructures
 
 class HDFSTweetCollection(collectionID: String, sc: org.apache.spark.SparkContext, sqlContext: org.apache.spark.sql.SQLContext, var collectionNumber: String) extends TweetCollection(collectionID, sc, sqlContext) {
     

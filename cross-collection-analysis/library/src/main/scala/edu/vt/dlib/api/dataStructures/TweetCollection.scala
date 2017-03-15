@@ -1,4 +1,4 @@
-package edu.vt.dlib.api.io
+package edu.vt.dlib.api.dataStructures
 
 import java.io.Serializable
 
