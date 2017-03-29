@@ -3,20 +3,20 @@ package edu.vt.dlib.api.dataStructures
 import org.apache.avro.generic.GenericRecord
 
 class HDFSTweet(dataRecord: GenericRecord) extends Tweet {
-	var archiveSource: 		String	= dataRecord.get("archiveSource")
-	var text: 				String	= dataRecord.get("text")
-	var to_user_id: 		String	= dataRecord.get("to_user_id")
-	var from_user: 			String	= dataRecord.get("from_user")
-	var id: 				String	= dataRecord.get("id")
-	var from_user_id:		String	= dataRecord.get("from_user_id")
-	var iso_language_code: 	String	= dataRecord.get("iso_language_code")
-	var source: 			String	= dataRecord.get("source")
-	var profile_image_url: 	String	= dataRecord.get("profile_image_url")
-	var geo_type: 			String	= dataRecord.get("geo_type")
-	var geo_coordinates_0: 	Double	= dataRecord.get("geo_coordinates_0")
-	var geo_coordinates_1: 	Double	= dataRecord.get("geo_coordinates_1")
-	var created_at: 		String	= dataRecord.get("created_at")
-	var time:				Int		= dataRecord.get("time")
+	archiveSource = dataRecord.get("archiveSource").toString
+	text = dataRecord.get("text").toString
+	to_user_id = dataRecord.get("to_user_id").toString
+	from_user = dataRecord.get("from_user").toString
+	id = dataRecord.get("id").toString
+	from_user_id = dataRecord.get("from_user_id").toString
+	iso_language_code = dataRecord.get("iso_language_code").toString
+	source = dataRecord.get("source").toString
+	profile_image_url = dataRecord.get("profile_image_url").toString
+	geo_type = dataRecord.get("geo_type").toString
+	geo_coordinates_0 = dataRecord.get("geo_coordinates_0").toString.toDouble
+	geo_coordinates_1 = dataRecord.get("geo_coordinates_1").toString.toDouble
+	created_at = dataRecord.get("created_at").toString
+	time = dataRecord.get("time").toString.toInt
 
-	var tokens = text.split(" ")
+	tokens = text.split(" ")
 }

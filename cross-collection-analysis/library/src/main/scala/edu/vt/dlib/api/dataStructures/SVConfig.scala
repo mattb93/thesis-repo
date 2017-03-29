@@ -4,7 +4,7 @@ class SVConfig() {
 
 	//import scala.collection.mutable.Map
 
-	var separator			String = ", "
+	var separator:			String = ", "
 
 	var archiveSource: 		Int	= 0
 	var text: 				Int	= 1

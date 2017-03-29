@@ -11,10 +11,9 @@ import org.apache.spark.mllib.classification.{LogisticRegressionWithLBFGS, Logis
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.linalg.DenseVector
 
-import java.io._
-
 class Word2VecSentimentAnalysis() extends Serializable {
     
+    import java.io._
 
     // Configutation parameters
     val tokensToDiscard = Array("connecticut", "shooting", "school", "sandy", "hook")
@@ -55,6 +54,8 @@ class Word2VecSentimentAnalysis() extends Serializable {
         }
 
         predictions.take(100).foreach(println)
+
+        printToFile("results/test.txt", predictions)
     }
 
     def createFeatureVector(tweet: Array[String]): org.apache.spark.mllib.linalg.Vector = {
@@ -89,6 +90,17 @@ class Word2VecSentimentAnalysis() extends Serializable {
             paddedFeatures(i - 1) = features(i -1)
         }
         return paddedFeatures
+    }
+
+    def printToFile(path: String, data: RDD[(String, Double)]) = {
+        val resultFile = new File(path)
+        val bufferedWriter = new BufferedWriter(new FileWriter(resultFile))
+
+        for(record <- data.collect()) {
+            bufferedWriter.write(record._1 + "\t" + record._2 + "\n")
+        }
+        
+        bufferedWriter.close()
     }
 }
 

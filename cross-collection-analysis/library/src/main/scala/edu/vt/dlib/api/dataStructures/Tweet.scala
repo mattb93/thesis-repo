@@ -7,20 +7,20 @@ abstract class Tweet() extends Serializable {
 	/*
 	 * Define fields for all of the data in an avro file
 	 */
-	var archiveSource: 		String	= null
-	var text: 				String	= null
-	var to_user_id: 		String	= null
-	var from_user: 			String	= null
-	var id: 				String	= null
-	var from_user_id:		String	= null
-	var iso_language_code: 	String	= null
-	var source: 			String	= null
-	var profile_image_url: 	String	= null
-	var geo_type: 			String	= null
-	var geo_coordinates_0: 	Double	= null
-	var geo_coordinates_1: 	Double	= null
-	var created_at: 		String	= null
-	var time:				Int		= null
+	var archiveSource: 		String	= ""
+	var text: 				String	= ""
+	var to_user_id: 		String	= ""
+	var from_user: 			String	= ""
+	var id: 				String	= ""
+	var from_user_id:		String	= ""
+	var iso_language_code: 	String	= ""
+	var source: 			String	= ""
+	var profile_image_url: 	String	= ""
+	var geo_type: 			String	= ""
+	var geo_coordinates_0: 	Double	= -1
+	var geo_coordinates_1: 	Double	= -1
+	var created_at: 		String	= ""
+	var time:				Int		= -1
 
 	/*
 	 * Field for tokenized tweet text. The text field (defined above) will
@@ -28,15 +28,15 @@ abstract class Tweet() extends Serializable {
 	 *
 	 * Also define a (key, value) payload to hold other arbitrary fields generated later.
 	 */
-	var tokens:		Array[String] = null
-	val payload:	Map[String, String] = Map()
+	var tokens:		Array[String] = new Array[String](0)
+	var payload:	Map[String, String] = scala.collection.immutable.Map[String, String]()
 
 	override def toString(): String =   {
 		return id + "\t" + tokens.mkString(" ")
 	}
 
 	def toStringVerbose(): String = {
-		val result = "Tweet content:" +
+		var result = "Tweet content:" +
 			"\n\tarchiveSource: " + archiveSource +
 			"\n\ttext: " + text +
 			"\n\tto_user_id: " + to_user_id +
@@ -55,7 +55,7 @@ abstract class Tweet() extends Serializable {
 			"\n\tpayload:"
 
 		for( (key, value) <- payload) {
-			result = result + "\n\t\t(" + key + ", " + value)
+			result = result + "\n\t\t(" + key + ", " + value + ")"
 		}
 
 		return result

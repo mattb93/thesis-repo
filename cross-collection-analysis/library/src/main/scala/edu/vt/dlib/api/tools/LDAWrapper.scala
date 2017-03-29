@@ -29,7 +29,7 @@ class LDAWrapper() extends Serializable{
 	    val vocab: Map[String, Int] = vocabArray.zipWithIndex.toMap
 	    // Tokenize the collection. You can ignore certain terms that you know will
 	    // appear too often to be meaningful
-	    val tokens = collection.getTextArrays().map(_.filter( t => !termsToIgnore.contains(t)))
+	    val tokens = collection.getTokenArrays().map(_.filter( t => !termsToIgnore.contains(t)))
 
 	    // Create a collection of term count vectors
 	    val documents = tokens.zipWithIndex.map { case (tokens, id) => 
