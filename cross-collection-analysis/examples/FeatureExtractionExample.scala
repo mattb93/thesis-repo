@@ -14,18 +14,18 @@ class FeatureExtractorExample() extends Runnable {
 
 		collection.removeStopWords().removeRTs().toLowerCase()
 
-		val featureExtractor = new FeatureExtractor(collection)
+		val featureExtractor = new FeatureExtractor()
 
-        val mentions = featureExtractor.extractMentions()
-		val hashtags = featureExtractor.extractHashtags()
-		val urls = featureExtractor.extractURLs()
+        val mentions = featureExtractor.extractMentions(collection)
+		val hashtags = featureExtractor.extractHashtags(collection)
+		val urls = featureExtractor.extractURLs(collection)
 		val negative = featureExtractor.extractToken(":(")
 
 
-		featureExtractor.writeToLocalFile("results/FeatureExtractionExample/" + collection.collectionID + "_mentions", mentions)
-		featureExtractor.writeToLocalFile("results/FeatureExtractionExample/" + collection.collectionID + "_hashtags", hashtags)
-		featureExtractor.writeToLocalFile("results/FeatureExtractionExample/" + collection.collectionID + "_urls", urls)
-		featureExtractor.writeToLocalFile("results/FeatureExtractionExample/" + collection.collectionID + "_positives", negative)
+		featureExtractor.writeFeaturesToLocalFile("results/FeatureExtractionExample/" + collection.collectionID + "_mentions", mentions)
+		featureExtractor.writeFeaturesToLocalFile("results/FeatureExtractionExample/" + collection.collectionID + "_hashtags", hashtags)
+		featureExtractor.writeFeaturesToLocalFile("results/FeatureExtractionExample/" + collection.collectionID + "_urls", urls)
+		featureExtractor.writeFeaturesToLocalFile("results/FeatureExtractionExample/" + collection.collectionID + "_negatives", negative)
 	}
 }
 

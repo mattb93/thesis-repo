@@ -17,7 +17,7 @@ class WordCounter() {
                     .sortBy(_._2, false);
 	}
 
-	def writeToLocalFile(path: String, counts: RDD[(String, Int)]) = {
+	def writeCountsToLocalFile(path: String, counts: RDD[(String, Int)]) = {
 		// Write the results back to local disk using standard java io
         val countFile = new File(path)
         val bufferedWriterCounts = new BufferedWriter(new FileWriter(countFile))

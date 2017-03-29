@@ -14,27 +14,25 @@ class MassExtractionExample() extends Runnable {
 
 		collection.removeRTs().toLowerCase()
 
-		val featureExtractor = new FeatureExtractor(collection)
+		val featureExtractor = new FeatureExtractor()
 
-		//val mentions = featureExtractor.extractMentions().map(tweet => (tweet._1, tweet._2.split(" ")))
-		//val hashtags = featureExtractor.extractHashtags().map(tweet => (tweet._1, tweet._2.split(" ")))
-		//val urls = featureExtractor.extractURLs().map(tweet => (tweet._1, tweet._2.split(" ")))
-		//val positive = featureExtractor.extractRegexMatches(""":\)""".r)
+		val mentions = featureExtractor.extractMentions(collections).map(tweet => (tweet._1, tweet._2.split(" ")))
+		featureExtractor.wroteFeaturesToLocalFile("results/MassExtractionExample/" + collection.collectionID + "_mentions", mentions)
 
-        val dataWriter = new DataWriter()
-		//dataWriter.writeToFile(mentions, "results/MassExtractionExample/" + collection.collectionID + "_mentions")
-		//dataWriter.writeToFile(hashtags, "results/MassExtractionExample/" + collection.collectionID + "_hashtags")
-		//dataWriter.writeToFile(urls, "results/MassExtractionExample/" + collection.collectionID + "_urls")
-		//dataWriter.writeToFile(positive, "results/MassExtractionExample/" + collection.collectionID + "_positives")
+		val hashtags = featureExtractor.extractHashtags().map(tweet => (tweet._1, tweet._2.split(" ")))
+		featureExtractor.wroteFeaturesToLocalFile("results/MassExtractionExample/" + collection.collectionID + "_mentions", mentions)
+
+		val urls = featureExtractor.extractURLs().map(tweet => (tweet._1, tweet._2.split(" ")))
+		featureExtractor.wroteFeaturesToLocalFile("results/MassExtractionExample/" + collection.collectionID + "_mentions", mentions)
 
 
 		val counter = new WordCounter()
         val counts = counter.count(collection.removeStopWords().removeRTs().toLowerCase())
-        counter.writeToLocalFile("results/MassExtractionExample/" + collection.collectionID + "_counts", counts)
+        counter.writeCountsToLocalFile("results/MassExtractionExample/" + collection.collectionID + "_counts", counts)
 
         val ldaWrapper = new LDAWrapper()
         val topics = ldaWrapper.analyze(collection)
-        ldaWrapper.writeToLocalFile("results/MassExtractionExample/" + collection.collectionID + "_topics", topics)
+        ldaWrapper.writeTopicsToLocalFile("results/MassExtractionExample/" + collection.collectionID + "_topics", topics)
 	}
 }
 

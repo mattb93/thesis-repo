@@ -55,7 +55,7 @@ class LDAWrapper() extends Serializable{
 	    return result
 	}
 
-	def writeToLocalFile(path: String, topics: Array[(Array[String], Array[Double])]) = {
+	def writeTopicsToLocalFile(path: String, topics: Array[(Array[String], Array[Double])]) = {
 		val topicFile = new File(path)
         
         val bufferedWriterTopics = new BufferedWriter(new FileWriter(topicFile))

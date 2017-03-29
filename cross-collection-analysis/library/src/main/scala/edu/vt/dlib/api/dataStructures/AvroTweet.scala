@@ -2,7 +2,7 @@ package edu.vt.dlib.api.dataStructures
 
 import org.apache.avro.generic.GenericRecord
 
-class HDFSTweet(dataRecord: GenericRecord) extends Tweet {
+class AvroTweet(dataRecord: GenericRecord) extends Tweet {
 	archiveSource = dataRecord.get("archiveSource").toString
 	text = dataRecord.get("text").toString
 	to_user_id = dataRecord.get("to_user_id").toString

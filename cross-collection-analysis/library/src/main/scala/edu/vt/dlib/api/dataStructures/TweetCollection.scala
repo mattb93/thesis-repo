@@ -4,7 +4,6 @@ import java.io.Serializable
 
 /*
  * Provides convenience methods to read tweet data from and write tweet data to the DLRL cluster.
- * Reads from avro files and provides methods to map data to more useful formats.
  * 
  */
 abstract class TweetCollection(val collectionID: String, @transient val sc: org.apache.spark.SparkContext, @transient val sqlContext: org.apache.spark.sql.SQLContext) extends Serializable {
@@ -18,27 +17,51 @@ abstract class TweetCollection(val collectionID: String, @transient val sc: org.
     // http://alvinalexander.com/scala/how-to-control-scala-method-scope-object-private-package
     var collection: RDD[Tweet] = null;
 
+    /*
+     * Return the collection as an RDD of Tweet objects
+     */
     def getCollection() : RDD[Tweet] = {
         return collection
     }
 
+    /*
+     * Return the collection as an RDD of Strings representing the tweet text
+     */
     def getPlainText(): RDD[String] = {
         return collection.filter(tweet => ! tweet.tokens.isEmpty).map(tweet => tweet.tokens.mkString(" "))
     }
 
+    /*
+     * Return the collection as an RDD of (String, String) tuples containing (tweet id, tweet text)
+     */
     def getPlainTextID() : RDD[(String, String)] = {
         return collection.filter(tweet => ! tweet.tokens.isEmpty).map(tweet => (tweet.id, tweet.tokens.mkString(" ")))
     }
 
+    /*
+     * Return the collection as Array[String]. Each array contains the tokens contained in the tweet
+     */
     def getTokenArrays(): RDD[Array[String]] = {
         return collection.filter(tweet => ! tweet.tokens.isEmpty).map(tweet => tweet.tokens)
     }
 
+    /*
+     * Return the collection as an RDD of (String, Array[String]) tuples containing (tweet id, array of tokens)
+     */
     def getTokenArraysID(): RDD[(String, Array[String])] = {
         return collection.filter(tweet => ! tweet.tokens.isEmpty).map(tweet => (tweet.id, tweet.tokens))
     }
 
-    def removeStopWords() : TweetCollection = {
+    //.........................................................................
+    //==============================//
+    // CLEANING FUNCTIONS           //
+    // Clean the collection contents//
+    //==============================//
+
+    /*
+     * Clean the stop words from the tweets using Spark's StopWordsRemover
+     */
+    def cleanStopWords() : TweetCollection = {
         println("Removing Stop Words NOT CURRENTLY IMPLEMENTED")
 
         //val remover = new StopWordsRemover().setInputCol("raw").setOutputCol("filtered")
@@ -47,7 +70,10 @@ abstract class TweetCollection(val collectionID: String, @transient val sc: org.
         return this
     }
 
-    def removeRTs() : TweetCollection = {
+    /*
+     * clean the RT tokens that come at the beginning of Retweets
+     */
+    def cleanRTMarkers() : TweetCollection = {
         println("Removing 'RT' instances")
 
         //collection = collection.foreach(tweet => tweet.tokens.filter(_ != "RT"))
@@ -56,51 +82,219 @@ abstract class TweetCollection(val collectionID: String, @transient val sc: org.
         return this
     }
 
-    def removeMentions() : TweetCollection = {
+    /*
+     * Remove retweets from the collection entirely
+     */
+    def cleanRetweets(): TweetColelction = {
+        println("Removing Retweets")
+
+        collection = collection.filter(tweet => tweet.tokens.contains("RT"))
+
+        return this
+    }
+
+    /*
+     * Remove mentions from the tweets
+     */
+    def cleanMentions() : TweetCollection = {
         println("Removing mentions")
         collection.foreach(tweet => tweet.tokens.filter(x => ! """\"*@.*""".r.pattern.matcher(x).matches))
         return this
     }
 
-    def removeHashtags() : TweetCollection = {
+    /*
+     * Remove hashtags from the tweets
+     */
+    def cleanHashtags() : TweetCollection = {
         println("Removing hashtags")
         collection.foreach(tweet => tweet.tokens.filter(x => ! """#.*""".r.pattern.matcher(x).matches))
         return this
     }
 
-    def removeURLs() : TweetCollection = {
+    /*
+     * Remove URLs from the tweets
+     */
+    def cleanURLs() : TweetCollection = {
         println("Removing URLs")
         collection.foreach(tweet => tweet.tokens.filter(x => ! """.*http.*""".r.pattern.matcher(x).matches))
         return this
     }
 
-    def removePunctuation() : TweetCollection = {
+    /*
+     * Remove punctuation from the tweets
+     */
+    def cleanPunctuation() : TweetCollection = {
         println("Removing punctiation")
         collection.foreach(tweet => tweet.tokens.map(x => x.replaceAll("[^A-Za-z0-9@#]", "")))
         return this
     }
 
+    /*
+     * Remove all tokens which match the specified regular expression
+     */
+    def cleanRegexMatches(regex: scala.util.matching.Regex) : TweetCollection = {
+        println("Removing regex")
+        collection.foreach(tweet => tweet.tokens.filter(x => ! regex.pattern.matcher(x).matches))
+        return this
+    }
+
+    /*
+     * Remove all tokens which do not match the specified regular expression
+     */
+    def cleanRegexNonmatches(regex: scala.util.matching.Regex) : TweetCollection = {
+        println("Removing regex")
+        collection.foreach(tweet => tweet.tokens.filter(x => regex.pattern.matcher(x).matches))
+        return this
+    }
+
+    /*
+     * Remove all instances of the specified tokens from the collection
+     */
+    def cleanTokens(tokensToRemove: Array[String]) : TweetCollection = {
+        println("Removing tokens: [" + tokensToRemove.mkString(", ") + "]")
+        collection.foreach(tweet => tweet.tokens.filter(x => ! tokensToRemove.contains(x)))
+        return this
+    }
+
+    /*
+     * Turn all text lowercase
+     */
     def toLowerCase() : TweetCollection = {
         println("Converting to lowercase")
         collection.foreach(tweet => tweet.tokens.map(x => x.toLowerCase()))
         return this
     }
 
-    def removeRegexMatches(regex: scala.util.matching.Regex) : TweetCollection = {
-        println("Removing regex")
-        collection.foreach(tweet => tweet.tokens.filter(x => ! regex.pattern.matcher(x).matches))
+    //.........................................................................
+    //============================//
+    // FILTER FUNCTIONS           //
+    // Remove unnecessary content //
+    //============================//
+    def filterByArchiveSource(filter: String, keepIf: Boolean = true) : TweetCollection = {
+
+        collection = collection.filter(tweet => (tweet.archiveSource == filter) == keepIf)
+
         return this
     }
 
-    def removeRegexNonmatches(regex: scala.util.matching.Regex) : TweetCollection = {
-        println("Removing regex")
-        collection.foreach(tweet => tweet.tokens.filter(x => regex.pattern.matcher(x).matches))
+    def filterByToUserId(filter: String, keepIf: Boolean = true) : TweetCollection = {
+
+        collection = collection.filter(tweet => (tweet.to_user_id == filter) == keepIf)
+
         return this
     }
 
-    def removeTokens(tokensToRemove: Array[String]) : TweetCollection = {
-        println("Removing tokens: [" + tokensToRemove.mkString(", ") + "]")
-        collection.foreach(tweet => tweet.tokens.filter(x => ! tokensToRemove.contains(x)))
+    def filterByFromUser(filter: String, keepIf: Boolean = true) : TweetCollection = {
+
+        collection = collection.filter(tweet => (tweet.from_user == filter) == keepIf)
+
         return this
+    }
+
+    def filterByID(filter: String, keepIf: Boolean = true) : TweetCollection = {
+
+        collection = collection.filter(tweet => (tweet.id == filter) == keepIf)
+
+        return this
+    }
+
+    def filterByFromUserId(filter: String, keepIf: Boolean = true) : TweetCollection = {
+
+        collection = collection.filter(tweet => (tweet.from_user_id == filter) == keepIf)
+
+        return this
+    }
+
+    def filterByIsoLanguageCode(filter: String, keepIf: Boolean = true) : TweetCollection = {
+
+        collection = collection.filter(tweet => (tweet.iso_language_code == filter) == keepIf)
+
+        return this
+    }
+
+    def filterBySource(filter: String, keepIf: Boolean = true) : TweetCollection = {
+
+        collection = collection.filter(tweet => (tweet.source == filter) == keepIf)
+
+        return this
+    }
+
+    def filterByProfileImageURL(filter: String, keepIf: Boolean = true) : TweetCollection = {
+
+        collection = collection.filter(tweet => (tweet.profile_image_url == filter) == keepIf)
+
+        return this
+    }
+
+    def filterByGeoType(filter: String, keepIf: Boolean = true) : TweetCollection = {
+
+        collection = collection.filter(tweet => (tweet.geo_type == filter) == keepIf)
+
+        return this
+    }
+
+    def filterByGeoCoordinates0(filter: Double, greaterThan: Boolean = true) : TweetCollection = {
+
+        if(greaterThan){
+            collection = collection.filter(tweet => tweet.geo_coordinates_0 > filter)
+        }
+        else {
+            collection = collection.filter(tweet => tweet.geo_coordinates_0 < filter)
+        }
+
+        return this
+    }
+
+    def filterByGeoCoordinates1(filter: Double, greaterThan: Boolean = true) : TweetCollection = {
+
+        if(greaterThan) {
+            collection = collection.filter(tweet => tweet.geo_coordinates_1 > filter)
+        }
+        else {
+            collection = collection.filter(tweet => tweet.geo_coordinates_1 < filter)
+        }
+
+        return this
+    }
+
+    def filterByCreatedAt(filter: String, keepIf: Boolean = true) : TweetCollection = {
+
+        collection = collection.filter(tweet => (tweet.created_at == filter) == keepIf)
+
+        return this
+    }
+
+    def filterByTime(filter: int, greaterThan: Boolean = true) : TweetCollection = {
+
+        if(greaterThan) {
+            collection = collection.filter(tweet => tweet.time > filter)
+        }
+        else {
+            collection = collection.filter(tweet => tweet.time < filter)
+        }
+
+        return this
+    }
+
+    def filterByTokens(filter: Array[String], requireAll: Boolean = false, keepIf: Boolean = true) = {
+        if(requireAll) {
+            collection = collection.filter(tweet => tweet.tokens.union(filter) == filter)
+        }
+        else {
+            collection = collection.filter(tweet => ! tweet.tokens.union(filter).isEmpty)
+        }
+    }
+
+    //.........................................................................
+    //================================//
+    // UTILITY FUNCTIONS              //
+    // Other various useful functions //
+    //================================//
+    /*
+     * Return a random sample of the tweets contained in this collection as an RDD of Tweets
+     */
+    def randomSample(withReplacement: Boolean, fraction: Double) : RDD[Tweet] = {
+
+        return collection.sample(withReplacement, fraction)
     }
 }
