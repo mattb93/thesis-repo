@@ -7,7 +7,7 @@ abstract class Tweet() extends Serializable {
 	/*
 	 * Define fields for all of the data in an avro file
 	 */
-	var archiveSource: 		String	= ""
+	var archivesource: 		String	= ""
 	var text: 				String	= ""
 	var to_user_id: 		String	= ""
 	var from_user: 			String	= ""
@@ -37,7 +37,7 @@ abstract class Tweet() extends Serializable {
 
 	def toStringVerbose(): String = {
 		var result = "Tweet content:" +
-			"\n\tarchiveSource: " + archiveSource +
+			"\n\tarchivesource: " + archivesource +
 			"\n\ttext: " + text +
 			"\n\tto_user_id: " + to_user_id +
 			"\n\tfrom_user: " + from_user +

@@ -6,7 +6,7 @@ class SVConfig() {
 
 	var separator:			String = ", "
 
-	var archiveSource: 		Int	= 0
+	var archivesource: 		Int	= 0
 	var text: 				Int	= 1
 	var to_user_id: 		Int	= 2
 	var from_user: 			Int	= 3

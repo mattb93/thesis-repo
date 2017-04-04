@@ -4,7 +4,7 @@ class SVTweet(line: String, config: SVConfig = new SVConfig()) extends Tweet {
 
 	var columns = line.split(config.separator)
 
-	archiveSource       = columns(config.archiveSource)
+	archivesource       = columns(config.archivesource)
 	text                = columns(config.text)
 	to_user_id          = columns(config.to_user_id)
 	from_user           = columns(config.from_user)

@@ -1,5 +1,5 @@
 import edu.vt.dlib.api.pipeline.Runnable
-import edu.vt.dlib.api.pipeline.HDFSRunner
+import edu.vt.dlib.api.pipeline.AvroRunner
 
 /*
  * Proof of concept for feature extraction tool. Uses the API's feature extraction tool
@@ -12,14 +12,14 @@ class FeatureExtractorExample() extends Runnable {
 	def run(collection: TweetCollection) {
 		println("Processiong collection: " + collection.collectionID)
 
-		collection.removeStopWords().removeRTs().toLowerCase()
+		collection.cleanStopWords().cleanRTMarkers().toLowerCase()
 
 		val featureExtractor = new FeatureExtractor()
 
         val mentions = featureExtractor.extractMentions(collection)
 		val hashtags = featureExtractor.extractHashtags(collection)
 		val urls = featureExtractor.extractURLs(collection)
-		val negative = featureExtractor.extractToken(":(")
+		val negative = featureExtractor.extractToken(collection, ":(", false)
 
 
 		featureExtractor.writeFeaturesToLocalFile("results/FeatureExtractionExample/" + collection.collectionID + "_mentions", mentions)
@@ -35,6 +35,6 @@ class FeatureExtractorExample() extends Runnable {
 val collections = Array("41")
 
 // Create a new runner with the collection numbers and a word counter to run
-val runner = new HDFSRunner(sc, sqlContext)
+val runner = new AvroRunner(sc, sqlContext)
 
 runner.run(new FeatureExtractorExample(), collections)

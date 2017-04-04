@@ -3,7 +3,7 @@ package edu.vt.dlib.api.dataStructures
 import org.apache.avro.generic.GenericRecord
 
 class AvroTweet(dataRecord: GenericRecord) extends Tweet {
-	archiveSource = dataRecord.get("archiveSource").toString
+	archivesource = dataRecord.get("archivesource").toString
 	text = dataRecord.get("text").toString
 	to_user_id = dataRecord.get("to_user_id").toString
 	from_user = dataRecord.get("from_user").toString

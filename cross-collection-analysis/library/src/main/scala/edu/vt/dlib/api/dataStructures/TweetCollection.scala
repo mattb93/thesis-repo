@@ -85,7 +85,7 @@ abstract class TweetCollection(val collectionID: String, @transient val sc: org.
     /*
      * Remove retweets from the collection entirely
      */
-    def cleanRetweets(): TweetColelction = {
+    def cleanRetweets(): TweetCollection = {
         println("Removing Retweets")
 
         collection = collection.filter(tweet => tweet.tokens.contains("RT"))
@@ -172,7 +172,7 @@ abstract class TweetCollection(val collectionID: String, @transient val sc: org.
     //============================//
     def filterByArchiveSource(filter: String, keepIf: Boolean = true) : TweetCollection = {
 
-        collection = collection.filter(tweet => (tweet.archiveSource == filter) == keepIf)
+        collection = collection.filter(tweet => (tweet.archivesource == filter) == keepIf)
 
         return this
     }
@@ -264,7 +264,7 @@ abstract class TweetCollection(val collectionID: String, @transient val sc: org.
         return this
     }
 
-    def filterByTime(filter: int, greaterThan: Boolean = true) : TweetCollection = {
+    def filterByTime(filter: Int, greaterThan: Boolean = true) : TweetCollection = {
 
         if(greaterThan) {
             collection = collection.filter(tweet => tweet.time > filter)
