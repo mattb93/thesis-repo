@@ -11,11 +11,14 @@ abstract class TweetCollection(val collectionID: String, @transient val sc: org.
     import org.apache.spark.rdd.RDD
     import org.apache.spark.ml.feature.StopWordsRemover
     import scala.collection.mutable.WrappedArray
-    
     import sqlContext.implicits._
+    import java.lang.IllegalStateException
+    
 
     // http://alvinalexander.com/scala/how-to-control-scala-method-scope-object-private-package
     var collection: RDD[Tweet] = null;
+
+    var rtTokensCleaned: Boolean = false;
 
     /*
      * Return the collection as an RDD of Tweet objects
@@ -75,20 +78,9 @@ abstract class TweetCollection(val collectionID: String, @transient val sc: org.
      */
     def cleanRTMarkers() : TweetCollection = {
         println("Removing 'RT' instances")
-
-        //collection = collection.foreach(tweet => tweet.tokens.filter(_ != "RT"))
-        collection.foreach(tweet => tweet.tokens.filter(_ != "RT"))
-
-        return this
-    }
-
-    /*
-     * Remove retweets from the collection entirely
-     */
-    def cleanRetweets(): TweetCollection = {
-        println("Removing Retweets")
-
-        collection = collection.filter(tweet => tweet.tokens.contains("RT"))
+        
+        rtTokensCleaned = true
+        collection = collection.map(tweet => tweet.setTokens(tweet.tokens.filter(_ != "RT")))
 
         return this
     }
@@ -98,7 +90,7 @@ abstract class TweetCollection(val collectionID: String, @transient val sc: org.
      */
     def cleanMentions() : TweetCollection = {
         println("Removing mentions")
-        collection.foreach(tweet => tweet.tokens.filter(x => ! """\"*@.*""".r.pattern.matcher(x).matches))
+        collection = collection.map(tweet => tweet.setTokens(tweet.tokens.filter(x => ! """@[a-zA-Z0-9]+""".r.pattern.matcher(x).matches)))
         return this
     }
 
@@ -107,7 +99,7 @@ abstract class TweetCollection(val collectionID: String, @transient val sc: org.
      */
     def cleanHashtags() : TweetCollection = {
         println("Removing hashtags")
-        collection.foreach(tweet => tweet.tokens.filter(x => ! """#.*""".r.pattern.matcher(x).matches))
+        collection = collection.map(tweet => tweet.setTokens(tweet.tokens.filter(x => ! """#[a-zA-Z0-9]+""".r.pattern.matcher(x).matches)))
         return this
     }
 
@@ -116,7 +108,7 @@ abstract class TweetCollection(val collectionID: String, @transient val sc: org.
      */
     def cleanURLs() : TweetCollection = {
         println("Removing URLs")
-        collection.foreach(tweet => tweet.tokens.filter(x => ! """.*http.*""".r.pattern.matcher(x).matches))
+        collection = collection.map(tweet => tweet.setTokens(tweet.tokens.filter(x => ! """http://t\.co/[a-zA-Z0-9]+""".r.pattern.matcher(x).matches)))
         return this
     }
 
@@ -125,7 +117,7 @@ abstract class TweetCollection(val collectionID: String, @transient val sc: org.
      */
     def cleanPunctuation() : TweetCollection = {
         println("Removing punctiation")
-        collection.foreach(tweet => tweet.tokens.map(x => x.replaceAll("[^A-Za-z0-9@#]", "")))
+        collection = collection.map(tweet => tweet.setTokens(tweet.tokens.map(x => x.replaceAll("[^A-Za-z0-9@#]", ""))))
         return this
     }
 
@@ -134,7 +126,7 @@ abstract class TweetCollection(val collectionID: String, @transient val sc: org.
      */
     def cleanRegexMatches(regex: scala.util.matching.Regex) : TweetCollection = {
         println("Removing regex")
-        collection.foreach(tweet => tweet.tokens.filter(x => ! regex.pattern.matcher(x).matches))
+        collection = collection.map(tweet => tweet.setTokens(tweet.tokens.filter(x => ! regex.pattern.matcher(x).matches)))
         return this
     }
 
@@ -143,7 +135,7 @@ abstract class TweetCollection(val collectionID: String, @transient val sc: org.
      */
     def cleanRegexNonmatches(regex: scala.util.matching.Regex) : TweetCollection = {
         println("Removing regex")
-        collection.foreach(tweet => tweet.tokens.filter(x => regex.pattern.matcher(x).matches))
+        collection = collection.map(tweet => tweet.setTokens(tweet.tokens.filter(x => regex.pattern.matcher(x).matches)))
         return this
     }
 
@@ -152,16 +144,7 @@ abstract class TweetCollection(val collectionID: String, @transient val sc: org.
      */
     def cleanTokens(tokensToRemove: Array[String]) : TweetCollection = {
         println("Removing tokens: [" + tokensToRemove.mkString(", ") + "]")
-        collection.foreach(tweet => tweet.tokens.filter(x => ! tokensToRemove.contains(x)))
-        return this
-    }
-
-    /*
-     * Turn all text lowercase
-     */
-    def toLowerCase() : TweetCollection = {
-        println("Converting to lowercase")
-        collection.foreach(tweet => tweet.tokens.map(x => x.toLowerCase()))
+        collection = collection.map(tweet => tweet.setTokens(tweet.tokens.filter(x => ! tokensToRemove.contains(x))))
         return this
     }
 
@@ -170,6 +153,21 @@ abstract class TweetCollection(val collectionID: String, @transient val sc: org.
     // FILTER FUNCTIONS           //
     // Remove unnecessary content //
     //============================//
+
+    /*
+     * Remove retweets from the collection entirely
+     */
+    def filterRetweets(): TweetCollection = {
+        println("Removing Retweets")
+        
+        if(rtTokensCleaned) {
+            throw new IllegalStateException("Can't remove retweets if RT Markers have already been cleaned")
+        }
+        collection = collection.filter(tweet => tweet.tokens.contains("RT"))
+
+        return this
+    }
+
     def filterByArchiveSource(filter: String, keepIf: Boolean = true) : TweetCollection = {
 
         collection = collection.filter(tweet => (tweet.archivesource == filter) == keepIf)
@@ -296,5 +294,23 @@ abstract class TweetCollection(val collectionID: String, @transient val sc: org.
     def randomSample(withReplacement: Boolean, fraction: Double) : RDD[Tweet] = {
 
         return collection.sample(withReplacement, fraction)
+    }
+
+    /*
+     * Turn all text lowercase
+     */
+    def toLowerCase() : TweetCollection = {
+        println("Converting to lowercase")
+        collection = collection.map(tweet => tweet.setTokens(tweet.tokens.map(x => x.toLowerCase())))
+        return this
+    }
+
+    /*
+     * Filter invalid tweets out of the collection
+     */
+    def sanitize(): TweetCollection = {
+        // No empty tweets
+        collection.filter(tweet => tweet.tokens.length > 0)
+        return this
     }
 }

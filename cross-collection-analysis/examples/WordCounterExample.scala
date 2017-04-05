@@ -17,7 +17,7 @@ class WordCounterExample() extends Runnable {
         // The methods chained here are provided by the dlib api. We take the collection and run it through
         // some of the cleaning methods, then pass it to the counting tool.
         val counter = new WordCounter()
-        val counts = counter.count(collection.removeStopWords().removeRTs().toLowerCase()).collect()
+        val counts = counter.count(collection.cleanStopWords().cleanRTMarkers().toLowerCase()).collect()
 
         // Write the results back to local disk using standard java io
         val resultFile = new File("results/WordCounterExample/z_" + collection.collectionID)
@@ -31,14 +31,15 @@ class WordCounterExample() extends Runnable {
 }
 
 // Import Runner so we can instantiate one below
-import edu.vt.dlib.api.pipeline.HDFSRunner
+import edu.vt.dlib.api.pipeline.AvroRunner
 
 // Define collections to be pulled from hbase.
 val collections = Array("41", "45", "128", "145", "157", "443")
+//val collections = Array("41")
 
 // Create a new runner to run the analysis on the batch of collections.
 // Pass it the Spark Context and SQL Context provided by the spark shell.
-val runner = new HDFSRunner(sc, sqlContext)
+val runner = new AvroRunner(sc, sqlContext)
 
 // Run the analysis by calling the run method and passing it the runnable we created above.
 runner.run(new WordCounterExample(), collections)

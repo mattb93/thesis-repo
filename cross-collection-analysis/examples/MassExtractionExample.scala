@@ -1,33 +1,32 @@
-import edu.vt.dlib.api.io.TweetCollection
-import edu.vt.dlib.api.io.DataWriter
+import edu.vt.dlib.api.dataStructures.TweetCollection
 import edu.vt.dlib.api.tools.WordCounter
 import edu.vt.dlib.api.tools.FeatureExtractor
 import edu.vt.dlib.api.tools.LDAWrapper
 import edu.vt.dlib.api.pipeline.Runnable
 import edu.vt.dlib.api.pipeline.SVRunner
-
+import edu.vt.dlib.api.dataStructures.SVConfig
 
 class MassExtractionExample() extends Runnable {
     	
 
 	def run(collection: TweetCollection) = {
 
-		collection.removeRTs().toLowerCase()
+		collection.cleanRTMarkers().toLowerCase()
 
 		val featureExtractor = new FeatureExtractor()
 
-		val mentions = featureExtractor.extractMentions(collections).map(tweet => (tweet._1, tweet._2.split(" ")))
-		featureExtractor.wroteFeaturesToLocalFile("results/MassExtractionExample/" + collection.collectionID + "_mentions", mentions)
+		val mentions = featureExtractor.extractMentions(collection)
+		featureExtractor.writeFeaturesToLocalFile("results/MassExtractionExample/" + collection.collectionID + "_mentions", mentions)
 
-		val hashtags = featureExtractor.extractHashtags().map(tweet => (tweet._1, tweet._2.split(" ")))
-		featureExtractor.wroteFeaturesToLocalFile("results/MassExtractionExample/" + collection.collectionID + "_mentions", mentions)
+		val hashtags = featureExtractor.extractHashtags(collection)
+		featureExtractor.writeFeaturesToLocalFile("results/MassExtractionExample/" + collection.collectionID + "_mentions", mentions)
 
-		val urls = featureExtractor.extractURLs().map(tweet => (tweet._1, tweet._2.split(" ")))
-		featureExtractor.wroteFeaturesToLocalFile("results/MassExtractionExample/" + collection.collectionID + "_mentions", mentions)
+		val urls = featureExtractor.extractURLs(collection)
+		featureExtractor.writeFeaturesToLocalFile("results/MassExtractionExample/" + collection.collectionID + "_mentions", mentions)
 
 
 		val counter = new WordCounter()
-        val counts = counter.count(collection.removeStopWords().removeRTs().toLowerCase())
+        val counts = counter.count(collection)
         counter.writeCountsToLocalFile("results/MassExtractionExample/" + collection.collectionID + "_counts", counts)
 
         val ldaWrapper = new LDAWrapper()
@@ -45,4 +44,9 @@ class MassExtractionExample() extends Runnable {
 val fileNames = Array("trails/AT_0224.txt", "trails/CDT_0224.txt", "trails/PCT_0224.txt")
 
 val runner = new SVRunner(sc, sqlContext)
-runner.run(new MassExtractionExample(), fileNames, "\t", 1, 0)
+
+val config = new SVConfig()
+config.setTextIDOnly()
+config.separator = "\t"
+
+runner.run(new MassExtractionExample(), fileNames, config)

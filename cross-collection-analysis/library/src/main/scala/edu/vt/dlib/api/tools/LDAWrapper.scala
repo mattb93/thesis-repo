@@ -20,6 +20,8 @@ class LDAWrapper() extends Serializable{
 
 	// Returns RDD[(TopicNumber, Array[(Term, Weight)])]
 	def analyze(collection: TweetCollection) : Array[(Array[String], Array[Double])] = {
+        
+        collection.sanitize()
 		
 		// Get term counts
 		val termCounts = new WordCounter().count(collection)

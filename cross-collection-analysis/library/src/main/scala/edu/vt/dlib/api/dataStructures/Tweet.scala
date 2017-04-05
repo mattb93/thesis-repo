@@ -31,6 +31,16 @@ abstract class Tweet() extends Serializable {
 	var tokens:		Array[String] = new Array[String](0)
 	var payload:	Map[String, String] = scala.collection.immutable.Map[String, String]()
 
+    def setTokens(newTokens: Array[String]): Tweet = {
+        tokens = newTokens
+        return this
+    }
+
+    def addToPayload(key: String, value: String): Tweet = {
+        payload += key -> value
+        return this
+    }  
+
 	override def toString(): String =   {
 		return id + "\t" + tokens.mkString(" ")
 	}
