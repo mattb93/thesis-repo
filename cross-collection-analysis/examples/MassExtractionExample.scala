@@ -11,7 +11,7 @@ class MassExtractionExample() extends Runnable {
 
 	def run(collection: TweetCollection) = {
 
-		collection.cleanRTMarkers().toLowerCase()
+		collection.cleanStopWords().cleanRTMarkers().toLowerCase().cleanPunctuation()
 
 		val featureExtractor = new FeatureExtractor()
 

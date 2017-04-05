@@ -70,6 +70,10 @@ abstract class TweetCollection(val collectionID: String, @transient val sc: org.
         //val remover = new StopWordsRemover().setInputCol("raw").setOutputCol("filtered")
         //val rawTextDF = collection.map(tweet => tweet.text).toDF("id", "raw")
         //collection = remover.transform(collection.map(rawTextDF).select("id", "filtered").map(row => (row(0).toString, (row(1).asInstanceOf[WrappedArray[String]]).toArray))
+
+        val remover = new StopWordsRemover()
+        val stopWords = remover.getStopWords
+        collection = collection.map(tweet => tweet.setTokens(tweet.tokens.filter(!stopWords.contains(_))))
         return this
     }
 
