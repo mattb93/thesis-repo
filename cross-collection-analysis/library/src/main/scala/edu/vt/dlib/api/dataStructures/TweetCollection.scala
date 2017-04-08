@@ -9,7 +9,6 @@ import java.io.Serializable
 abstract class TweetCollection(val collectionID: String, @transient val sc: org.apache.spark.SparkContext, @transient val sqlContext: org.apache.spark.sql.SQLContext) extends Serializable {
     
     import org.apache.spark.rdd.RDD
-    import org.apache.spark.ml.feature.StopWordsRemover
     import scala.collection.mutable.WrappedArray
     import sqlContext.implicits._
     import java.lang.IllegalStateException
@@ -65,15 +64,11 @@ abstract class TweetCollection(val collectionID: String, @transient val sc: org.
      * Clean the stop words from the tweets using Spark's StopWordsRemover
      */
     def cleanStopWords() : TweetCollection = {
-        println("Removing Stop Words NOT CURRENTLY IMPLEMENTED")
+        println("Removing Stop Words")
 
-        //val remover = new StopWordsRemover().setInputCol("raw").setOutputCol("filtered")
-        //val rawTextDF = collection.map(tweet => tweet.text).toDF("id", "raw")
-        //collection = remover.transform(collection.map(rawTextDF).select("id", "filtered").map(row => (row(0).toString, (row(1).asInstanceOf[WrappedArray[String]]).toArray))
-
-        val remover = new StopWordsRemover()
-        val stopWords = remover.getStopWords
-        collection = collection.map(tweet => tweet.setTokens(tweet.tokens.filter(!stopWords.contains(_))))
+        //val remover = new StopWordsRemover()
+        //val stopWords = remover.getStopWords
+        //collection = collection.map(tweet => tweet.setTokens(tweet.tokens.filter(!stopWords.contains(_))))
         return this
     }
 
@@ -315,6 +310,16 @@ abstract class TweetCollection(val collectionID: String, @transient val sc: org.
     def sanitize(): TweetCollection = {
         // No empty tweets
         collection.filter(tweet => tweet.tokens.length > 0)
+        return this
+    }
+
+    case class SerializableFunctionWrapper(val f: Tweet => Tweet)
+
+    def applyFunction(function: Tweet => Tweet): TweetCollection = {
+        val mapFunctionWrapper = SerializableFunctionWrapper(function)
+
+        collection = collection.map(mapFunctionWrapper.f)
+
         return this
     }
 }

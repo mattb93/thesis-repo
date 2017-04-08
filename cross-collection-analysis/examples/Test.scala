@@ -1,8 +1,16 @@
+import edu.vt.dlib.api.dataStructures.SVConfig
+import edu.vt.dlib.api.dataStructures.TweetCollection
+import edu.vt.dlib.api.dataStructures.SVTweetCollection
+import edu.vt.dlib.api.dataStructures.Tweet
+
 import edu.vt.dlib.api.pipeline.Runnable
+import edu.vt.dlib.api.pipeline.SVRunner
+import edu.vt.dlib.api.pipeline.AvroRunner
+
+import org.apache.spark.rdd.RDD
+
 
 /*
- * Word count example code. Extends runnable, which means it can be passed into the batch runner.
- */
 class Test() extends Runnable {
     import java.io._
     import edu.vt.dlib.api.dataStructures.TweetCollection
@@ -11,27 +19,62 @@ class Test() extends Runnable {
     /*
      * Run method required by the runnable trait. Must take a TweetCollection as a parameter.
      */
-    def run(collection: TweetCollection) {
+    def run(collection: TweetCollection) = {
         println("Processing collection " + collection.collectionID)
 
-        val col = collection.getCollection()
+        collection.applyFunction(cleaning).getCollection().take(20).foreach(println)
+    }
 
-        val col2 = col.map(tweet => tweet.setTokens(tweet.tokens.filter(_.length < 4)))
-
-        col2.take(10).foreach(tweet => println(tweet.tokens.mkString(" ")))
+    def cleaning(tweet: Tweet): Tweet = {
+        return tweet.cleanRTMarker().cleanHashtags()
     }
 }
 
+
 // Import Runner so we can instantiate one below
-import edu.vt.dlib.api.pipeline.AvroRunner
+
 
 // Define collections to be pulled from hbase.
 //val collections = Array("41", "45", "128", "145", "157", "443")
-val collections = Array("41")
+val collections = Array("trails/AT_0224.txt")
 
 // Create a new runner to run the analysis on the batch of collections.
 // Pass it the Spark Context and SQL Context provided by the spark shell.
-val runner = new AvroRunner(sc, sqlContext)
+val runner = new SVRunner(sc, sqlContext)
+
+val config = new SVConfig()
+config.setTextIDOnly()
+config.separator = "\t"
 
 // Run the analysis by calling the run method and passing it the runnable we created above.
-runner.run(new Test(), collections)
+runner.run(new Test(), collections, config)
+*/
+
+
+class Test() extends Serializable{
+
+    def cleaning(tweet: Tweet): Tweet = {
+        return tweet.cleanRTMarker().cleanHashtags()
+    }
+
+    def process(collection: TweetCollection) = {
+
+        collection.applyFunction(cleaning).getCollection().take(20).foreach(println)
+    }
+}
+
+var path = "trails/AT_0224.txt"
+
+val config = new SVConfig()
+config.setTextIDOnly()
+config.separator = "\t"
+
+var collection = new SVTweetCollection(path.split("/").last.split('.')(0), sc, sqlContext, path, config)
+
+//class MapFunction() extends Serializable {
+    def method(tweet: Tweet): Tweet = {
+        return tweet.setTokens(Array("Hello"))
+    }
+//}
+var test = new Test()
+test.process(collection, method)
