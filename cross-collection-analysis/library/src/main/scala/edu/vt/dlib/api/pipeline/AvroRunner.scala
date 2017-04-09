@@ -1,5 +1,5 @@
 package edu.vt.dlib.api.pipeline
-
+/*
 //import edu.vt.dlib.api.pipeline.Runnable
 import edu.vt.dlib.api.dataStructures.AvroTweetCollection
 
@@ -12,3 +12,4 @@ class AvroRunner(val sc: org.apache.spark.SparkContext, val sqlContext: org.apac
 		}
 	}
 }
+*/

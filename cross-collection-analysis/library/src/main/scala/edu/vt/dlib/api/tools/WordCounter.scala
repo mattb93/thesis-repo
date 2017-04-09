@@ -1,5 +1,6 @@
 package edu.vt.dlib.api.tools
 
+import edu.vt.dlib.api.dataStructures.Tweet
 import edu.vt.dlib.api.dataStructures.TweetCollection
 
 class WordCounter() {
@@ -8,7 +9,7 @@ class WordCounter() {
     
     import java.io._
 
-	def count(collection: TweetCollection) : RDD[(String, Int)] = {
+	def count(collection: TweetCollection[Tweet]) : RDD[(String, Int)] = {
 
         return collection.getPlainText()
         		.flatMap(line => line.split(" "))

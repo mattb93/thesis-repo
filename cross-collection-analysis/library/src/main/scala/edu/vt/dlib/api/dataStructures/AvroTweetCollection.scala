@@ -1,5 +1,5 @@
 package edu.vt.dlib.api.dataStructures
-
+/*
 class AvroTweetCollection(collectionID: String, sc: org.apache.spark.SparkContext, sqlContext: org.apache.spark.sql.SQLContext, var collectionNumber: String) extends TweetCollection(collectionID, sc, sqlContext) {
     
     import org.apache.avro.mapred.AvroInputFormat
@@ -13,3 +13,4 @@ class AvroTweetCollection(collectionID: String, sc: org.apache.spark.SparkContex
     collection = records.map(lambda => new AvroTweet(lambda._1.datum))
 
 }
+*/

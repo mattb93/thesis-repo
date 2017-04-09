@@ -1,11 +1,13 @@
 import edu.vt.dlib.api.dataStructures.SVConfig
 import edu.vt.dlib.api.dataStructures.TweetCollection
-import edu.vt.dlib.api.dataStructures.SVTweetCollection
+import edu.vt.dlib.api.dataStructures.TweetCollectionFactory
+//import edu.vt.dlib.api.dataStructures.SVTweetCollection
 import edu.vt.dlib.api.dataStructures.Tweet
+import edu.vt.dlib.api.dataStructures.SVTweet
 
-import edu.vt.dlib.api.pipeline.Runnable
-import edu.vt.dlib.api.pipeline.SVRunner
-import edu.vt.dlib.api.pipeline.AvroRunner
+//import edu.vt.dlib.api.pipeline.Runnable
+//import edu.vt.dlib.api.pipeline.SVRunner
+//import edu.vt.dlib.api.pipeline.AvroRunner
 
 import org.apache.spark.rdd.RDD
 
@@ -53,11 +55,13 @@ runner.run(new Test(), collections, config)
 
 class Test() extends Serializable{
 
-    def cleaning(tweet: Tweet): Tweet = {
-        return tweet.cleanRTMarker().cleanHashtags()
+    def cleaning(tweet: SVTweet): SVTweet = {
+        tweet.cleanRTMarker()
+        tweet.cleanHashtags()
+        return tweet
     }
 
-    def process(collection: TweetCollection) = {
+    def process(collection: TweetCollection[SVTweet]) = {
 
         collection.applyFunction(cleaning).getCollection().take(20).foreach(println)
     }
@@ -69,12 +73,9 @@ val config = new SVConfig()
 config.setTextIDOnly()
 config.separator = "\t"
 
-var collection = new SVTweetCollection(path.split("/").last.split('.')(0), sc, sqlContext, path, config)
+var factory = new TweetCollectionFactory(sc, sqlContext)
 
-//class MapFunction() extends Serializable {
-    def method(tweet: Tweet): Tweet = {
-        return tweet.setTokens(Array("Hello"))
-    }
-//}
+var collection = factory.createFromSVFile(path.split("/").last.split('.')(0), path, config)
+
 var test = new Test()
-test.process(collection, method)
+test.process(collection)
