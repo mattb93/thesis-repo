@@ -1,52 +1,21 @@
 package edu.vt.dlib.api.dataStructures
 import org.apache.spark.ml.feature.StopWordsRemover
 
-abstract class Tweet() extends Serializable {
+abstract class Tweet(val text: String, var id: String = "") extends Serializable {
 
 	//import scala.collection.mutable.Map
 	
 	/*
-	 * Define fields for all of the data in an avro file
+	 * Fields which all tweets can provide or generate
 	 */
-	var archivesource: 		String	= ""
-	var text: 				String	= ""
-	var to_user_id: 		String	= ""
-	var from_user: 			String	= ""
-	var id: 				String	= ""
-	var from_user_id:		String	= ""
-	var iso_language_code: 	String	= ""
-	var source: 			String	= ""
-	var profile_image_url: 	String	= ""
-	var geo_type: 			String	= ""
-	var geo_coordinates_0: 	Double	= -1
-	var geo_coordinates_1: 	Double	= -1
-	var created_at: 		String	= ""
-	var time:				Int		= -1
+	var tokens:		Array[String] = text.split(" ")
+	var hashtags:	Array[String] = tokens.filter(token => """#[a-zA-Z0-9]+""".r.pattern.matcher(token).matches)
+	var mentions:	Array[String] = tokens.filter(token => """@[a-zA-Z0-9]+""".r.pattern.matcher(token).matches)
+	var urls:		Array[String] = tokens.filter(token => """http://t\.co/[a-zA-Z0-9]+""".r.pattern.matcher(token).matches)
 
-	/*
-	 * Field for tokenized tweet text. The text field (defined above) will
-	 * the original text. Modified text will be held here.
-	 *
-	 * Also define a (key, value) payload to hold other arbitrary fields generated later.
-	 */
-	var tokens:		Array[String] = new Array[String](0)
-	var hashtags:	Array[String] = new Array[String](0)
-	var mentions:	Array[String] = new Array[String](0)
-	var urls:		Array[String] = new Array[String](0)
-
+	// Add a payload to hold other arbitrary data
 	var payload:	Map[String, String] = scala.collection.immutable.Map[String, String]()
 
-    def setup() = {
-    	tokens = text.split(" ")
-    	hashtags = tokens.filter(token => """#[a-zA-Z0-9]+""".r.pattern.matcher(token).matches)
-    	mentions = tokens.filter(token => """@[a-zA-Z0-9]+""".r.pattern.matcher(token).matches)
-    	urls = tokens.filter(token => """http://t\.co/[a-zA-Z0-9]+""".r.pattern.matcher(token).matches)
-    }
-
-    def setTokens(newTokens: Array[String]): Tweet = {
-        tokens = newTokens
-        return this
-    }
 
     def addToPayload(key: String, value: String): Tweet = {
         payload += key -> value
@@ -78,29 +47,34 @@ abstract class Tweet() extends Serializable {
     	return this
     }
 
-    def cleanURLs() : Tweet = {
+    def cleanURLs(): Tweet = {
 		tokens = tokens.filter(x => ! """http://t\.co/[a-zA-Z0-9]+""".r.pattern.matcher(x).matches)
-        return this
+		return this
     }
 
-    def cleanPunctuation() : Tweet = {
+    def cleanPunctuation(): Tweet = {
 		tokens = tokens.map(x => x.replaceAll("[^A-Za-z0-9@#]", ""))
-        return this
+		return this
     }
 
-    def cleanRegexMatches(regex: scala.util.matching.Regex) : Tweet = {
+    def cleanRegexMatches(regex: scala.util.matching.Regex): Tweet = {
 		tokens = tokens.filter(x => ! regex.pattern.matcher(x).matches)
-        return this
+		return this
     }
 
-    def cleanRegexNonmatches(regex: scala.util.matching.Regex) : Tweet = {
+    def cleanRegexNonmatches(regex: scala.util.matching.Regex): Tweet = {
 		tokens = tokens.filter(x => regex.pattern.matcher(x).matches)
-        return this
+		return this
     }
 
-    def cleanTokens(tokensToRemove: Array[String]) : Tweet = {
+    def cleanTokens(tokensToRemove: Array[String]): Tweet = {
         tokens = tokens.filter(x => ! tokensToRemove.contains(x))
         return this
+    }
+
+    def toLowerCase(): Tweet = {
+    	tokens = tokens.map(x => x.toLowerCase())
+    	return this
     }
 
 	override def toString(): String =   {
@@ -132,5 +106,13 @@ abstract class Tweet() extends Serializable {
 
 		return result
 	}
+
+	def canEqual(a: Any) = a.isInstanceOf[Tweet]
+
+  	override def equals(that: Any): Boolean =
+    	that match {
+      		case that: Tweet => that.canEqual(this) && this.id == that.id
+      		case _ => false
+   }
 }
 
