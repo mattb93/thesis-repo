@@ -13,6 +13,7 @@ abstract class Tweet(val text: String, var id: String = "") extends Serializable
 	var mentions:	Array[String] = tokens.filter(token => """@[a-zA-Z0-9]+""".r.pattern.matcher(token).matches)
 	var urls:		Array[String] = tokens.filter(token => """http://t\.co/[a-zA-Z0-9]+""".r.pattern.matcher(token).matches)
 
+	var isRetweet: 	Boolean = tokens(0) == "RT" || tokens(0) == "\"RT"
 	// Add a payload to hold other arbitrary data
 	var payload:	Map[String, String] = scala.collection.immutable.Map[String, String]()
 

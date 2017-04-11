@@ -1,45 +1,33 @@
-import edu.vt.dlib.api.pipeline.Runnable
+import edu.vt.dlib.api.dataStructures._
+import edu.vt.dlib.api.tools.WordCounter
 
-/*
- * Word count example code. Extends runnable, which means it can be passed into the batch runner.
- */
-class WordCounterExample() extends Runnable {
-    import java.io._
-    import edu.vt.dlib.api.dataStructures.TweetCollection
-    import edu.vt.dlib.api.tools.WordCounter
-
-    /*
-     * Run method required by the runnable trait. Must take a TweetCollection as a parameter.
-     */
-    def run(collection: TweetCollection) {
-        println("Processing collection number " + collection.collectionID)
-
-        // The methods chained here are provided by the dlib api. We take the collection and run it through
-        // some of the cleaning methods, then pass it to the counting tool.
-        val counter = new WordCounter()
-        val counts = counter.count(collection.cleanStopWords().cleanRTMarkers().toLowerCase()).collect()
-
-        // Write the results back to local disk using standard java io
-        val resultFile = new File("results/WordCounterExample/z_" + collection.collectionID)
-        val bufferedWriter = new BufferedWriter(new FileWriter(resultFile))
-        for(count <- counts) {
-            //println(count)
-            bufferedWriter.write(count._1 + "\t" + count._2 + "\n")
-        }
-        bufferedWriter.close()
-    }
-}
-
-// Import Runner so we can instantiate one below
-import edu.vt.dlib.api.pipeline.AvroRunner
 
 // Define collections to be pulled from hbase.
-val collections = Array("41", "45", "128", "145", "157", "443")
+val collectionNumbers = Array("41", "45", "128", "145", "157", "443")
 //val collections = Array("41")
 
-// Create a new runner to run the analysis on the batch of collections.
-// Pass it the Spark Context and SQL Context provided by the spark shell.
-val runner = new AvroRunner(sc, sqlContext)
+def cleaning(tweet: AvroTweet): AvroTweet = {
+    tweet.cleanPunctuation()
+    tweet.cleanStopWords()
+    tweet.cleanRTMarker()
+    tweet.cleanURLs()
 
-// Run the analysis by calling the run method and passing it the runnable we created above.
-runner.run(new WordCounterExample(), collections)
+    return tweet
+}
+
+def filter(tweet: AvroTweet): Boolean = {
+    return tweet.isRetweet
+}
+
+var wordCounter = new WordCounter()
+val factory = new TweetCollectionFactory(sc, sqlContext)
+
+for( collectionNumber <- collectionNumbers)  {
+    val collection: TweetCollection[AvroTweet] = factory.createFromAvro("batch_" + collectionNumber, collectionNumber)
+
+    collection.applyFunction(cleaning)
+    collection.applyFunction(filter)
+
+    counter.count(collection)
+    counter.writeCountsToLocalFile("results/WordCounterExample/" + collectionNumber + "_counts.txt")
+}

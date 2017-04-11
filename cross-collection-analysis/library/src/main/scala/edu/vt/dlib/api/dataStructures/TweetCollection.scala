@@ -58,7 +58,7 @@ class TweetCollection[T <: Tweet: ClassTag](val collectionID: String, @transient
     // Remove unnecessary content //
     //============================//
 
-    def filter(function: T => Boolean) = {
+    def filter(function: T => Boolean): TweetCollection[T] = {
         val mapFunctionWrapper = SerializableConditionWrapper[T](function)
          
         collection = collection.filter(mapFunctionWrapper.f)
