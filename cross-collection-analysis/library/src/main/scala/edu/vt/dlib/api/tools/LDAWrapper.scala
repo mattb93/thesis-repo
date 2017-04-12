@@ -20,7 +20,7 @@ class LDAWrapper() extends Serializable{
 	var termsToIgnore: Array[String] = Array()
 
 	// Returns RDD[(TopicNumber, Array[(Term, Weight)])]
-	def analyze(collection: TweetCollection[Tweet]) : Array[(Array[String], Array[Double])] = {
+	def analyze(collection: TweetCollection[_ <: Tweet]) : Array[(Array[String], Array[Double])] = {
         
         collection.sanitize()
 		

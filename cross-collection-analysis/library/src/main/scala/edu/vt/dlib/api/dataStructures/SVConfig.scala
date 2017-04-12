@@ -9,7 +9,7 @@ class SVConfig() extends Serializable {
 
 	var text: 				Int	= 1
 	var id: 				Int	= 0
-	var otherColumns:		Array[(String, Int)] = Array[(String, Int)](0)
+	var otherColumns:		Array[(String, Int)] = new Array[(String, Int)](0)
 
     def setEmpty() = {
         numColumns = 0

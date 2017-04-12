@@ -3,11 +3,12 @@ import edu.vt.dlib.api.tools.WordCounter
 
 
 // Define collections to be pulled from hbase.
-val collectionNumbers = Array("41", "45", "128", "145", "157", "443")
+val collectionNumbers = Array(41, 45, 128, 145, 157, 443)
 //val collections = Array("41")
 
 def cleaning(tweet: AvroTweet): AvroTweet = {
     tweet.cleanPunctuation()
+    tweet.toLowerCase()
     tweet.cleanStopWords()
     tweet.cleanRTMarker()
     tweet.cleanURLs()
@@ -26,8 +27,8 @@ for( collectionNumber <- collectionNumbers)  {
     val collection: TweetCollection[AvroTweet] = factory.createFromAvro("batch_" + collectionNumber, collectionNumber)
 
     collection.applyFunction(cleaning)
-    collection.applyFunction(filter)
+    collection.filter(filter)
 
-    counter.count(collection)
-    counter.writeCountsToLocalFile("results/WordCounterExample/" + collectionNumber + "_counts.txt")
+    var counts = wordCounter.count(collection)
+    wordCounter.writeCountsToLocalFile("results/WordCounterExample/" + collectionNumber + "_counts.txt", counts)
 }

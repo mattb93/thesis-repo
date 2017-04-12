@@ -3,13 +3,13 @@ package edu.vt.dlib.api.tools
 import edu.vt.dlib.api.dataStructures.Tweet
 import edu.vt.dlib.api.dataStructures.TweetCollection
 
-class WordCounter() {
+class WordCounter() extends Serializable {
 
     import org.apache.spark.rdd.RDD
     
     import java.io._
 
-	def count(collection: TweetCollection[Tweet]) : RDD[(String, Int)] = {
+	def count(collection: TweetCollection[_ <: Tweet]) : RDD[(String, Int)] = {
 
         return collection.getPlainText()
         		.flatMap(line => line.split(" "))

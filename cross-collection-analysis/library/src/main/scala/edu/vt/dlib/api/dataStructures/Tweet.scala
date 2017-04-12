@@ -84,26 +84,21 @@ abstract class Tweet(val text: String, var id: String = "") extends Serializable
 
 	def toStringVerbose(): String = {
 		var result = "Tweet content:" +
-			"\n\tarchivesource: " + archivesource +
-			"\n\ttext: " + text +
-			"\n\tto_user_id: " + to_user_id +
-			"\n\tfrom_user: " + from_user +
+			"\n\toriginal text: " + text +
 			"\n\tid: " + id +
-			"\n\tfrom_user_id: " + from_user_id +
-			"\n\tiso_language_code: " + iso_language_code +
-			"\n\tsource: " + source +
-			"\n\tprofile_image_url: " + profile_image_url +
-			"\n\tgeo_type: " + geo_type +
-			"\n\tgeo_coordinates_0: " + geo_coordinates_0 +
-			"\n\tgeo_coordinates_1: " + geo_coordinates_1 +
-			"\n\tcreated_at: " + created_at +
-			"\n\ttime: " + time +
 			"\n\ttokens: " + tokens.mkString(" ") +
-			"\n\tpayload:"
+            "\n\thashtags: " + hashtags.mkString(", ") + 
+            "\n\tmentions: " + mentions.mkString(", ") +
+            "\n\turls: " + urls.mkString(", ")
+        
+        if(payload.isEmpty == false) {
 
-		for( (key, value) <- payload) {
-			result = result + "\n\t\t(" + key + ", " + value + ")"
-		}
+            result = result + "\n\tpayload contents:"
+
+	    	for( (key, value) <- payload) {
+			    result = result + "\n\t\t(" + key + ", " + value + ")"
+		    }
+        }
 
 		return result
 	}

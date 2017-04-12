@@ -2,7 +2,7 @@
 
 package edu.vt.dlib.api.dataStructures
 
-class TweetCollectionFactory(sc: org.apache.spark.SparkContext, sqlContext: org.apache.spark.sql.SQLContext) extends Serializable {
+class TweetCollectionFactory(@transient sc: org.apache.spark.SparkContext, @transient sqlContext: org.apache.spark.sql.SQLContext) extends Serializable {
 
     import org.apache.avro.mapred.AvroInputFormat
     import org.apache.avro.mapred.AvroWrapper

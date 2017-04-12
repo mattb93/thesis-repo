@@ -2,13 +2,15 @@ package edu.vt.dlib.api.dataStructures
 
 import java.io.Serializable
 import org.apache.spark.rdd.RDD
+import org.apache.spark.SparkContext
+import org.apache.spark.sql.SQLContext
 import scala.reflect.ClassTag
 
 /*
  * Provides convenience methods to read tweet data from and write tweet data to the DLRL cluster.
  * 
  */
-class TweetCollection[T <: Tweet: ClassTag](val collectionID: String, @transient val sc: org.apache.spark.SparkContext, @transient val sqlContext: org.apache.spark.sql.SQLContext, var collection: RDD[T]) extends Serializable {
+class TweetCollection[T <: Tweet: ClassTag](val collectionID: String, @transient val sc: SparkContext, @transient val sqlContext: SQLContext, var collection: RDD[T]) extends Serializable {
     
     import scala.collection.mutable.WrappedArray
     import sqlContext.implicits._
@@ -145,7 +147,6 @@ class TweetCollection[T <: Tweet: ClassTag](val collectionID: String, @transient
     }
 
     
-
     def applyFunction(function: T => T) = {
         val mapFunctionWrapper = SerializableFunctionWrapper[T](function)
          
@@ -153,7 +154,7 @@ class TweetCollection[T <: Tweet: ClassTag](val collectionID: String, @transient
     }
 
     def union(otherCollection: TweetCollection[T], filterDuplicates: Boolean = true) = {
-        collection = collection.union(otherCollection)
+        collection = collection.union(otherCollection.getCollection())
         if(filterDuplicates){
             collection = collection.distinct()
         }
