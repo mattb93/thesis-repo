@@ -54,7 +54,7 @@ abstract class Tweet(val text: String, var id: String = "") extends Serializable
     }
 
     def cleanPunctuation(): Tweet = {
-		tokens = tokens.map(x => x.replaceAll("[^A-Za-z0-9@#]", ""))
+		tokens = tokens.map(x => x.replaceAll("[^A-Za-z0-9@#]", "")).filter(x => x.length > 0)
 		return this
     }
 
@@ -86,7 +86,7 @@ abstract class Tweet(val text: String, var id: String = "") extends Serializable
 		var result = "Tweet content:" +
 			"\n\toriginal text: " + text +
 			"\n\tid: " + id +
-			"\n\ttokens: " + tokens.mkString(" ") +
+			"\n\ttokens: [" + tokens.mkString(", ") + "]" +
             "\n\thashtags: " + hashtags.mkString(", ") + 
             "\n\tmentions: " + mentions.mkString(", ") +
             "\n\turls: " + urls.mkString(", ")

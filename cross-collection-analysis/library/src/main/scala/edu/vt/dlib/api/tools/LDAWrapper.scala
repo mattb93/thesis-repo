@@ -20,10 +20,10 @@ class LDAWrapper() extends Serializable{
 	var termsToIgnore: Array[String] = Array()
 
 	// Returns RDD[(TopicNumber, Array[(Term, Weight)])]
-	def analyze(collection: TweetCollection[_ <: Tweet]) : Array[(Array[String], Array[Double])] = {
+	def analyze[T <: Tweet](collection: TweetCollection[T]) : Array[(Array[String], Array[Double])] = {
         
         collection.sanitize()
-		
+	    	
 		// Get term counts
 		val termCounts = new WordCounter().count(collection)
 
@@ -50,10 +50,32 @@ class LDAWrapper() extends Serializable{
 	    // Run LDA
 	    val lda = new LDA().setOptimizer(ldaOptimizer).setK(numTopics).setMaxIterations(maxIterations)
 	    val ldaModel = lda.run(documents)
-
+        
+        // Create RDD of (localID, tweetID)
+        val idKey = collection.getCollection().map(tweet => tweet.id).zipWithIndex.map{case(k,v) => (v,k)}
 	    var topicIndices = ldaModel.describeTopics(numTopics)
 
+        // Create RDD of (localID, topicProbabilities)
+        var docTopics: RDD[(Long, Array[Double])] = ldaModel.asInstanceOf[DistributedLDAModel].topicDistributions.map(elem => (elem._1, elem._2.toArray))
+        var tweetProbabilities = idKey.join(docTopics).map(_._2).collect().toMap
+        
 	    val result: Array[(Array[String], Array[Double])] = topicIndices.map { case (termIndices, weights) => (termIndices.map(index => vocabArray(index)), weights)}
+
+    
+        // Create a function to store topic data in tweets
+        def storeData(tweet: T): T = {
+            val topicProbabilities = tweetProbabilities.apply(tweet.id)
+            val topicNumber = topicProbabilities.indexOf(topicProbabilities.reduceLeft(_ max _))
+            val topicLabel = result(topicNumber)._1
+
+            tweet.addToPayload("topicProbabilities", topicProbabilities.mkString(" "))
+            tweet.addToPayload("topicNumber", topicNumber.toString)
+            tweet.addToPayload("topicLabel", topicLabel.mkString(" "))
+
+            return tweet
+        }
+
+        collection.applyFunction(storeData)
 
 	    return result
 	}

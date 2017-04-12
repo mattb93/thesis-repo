@@ -10,13 +10,14 @@ val fileNames = Array("HurricaneMatthew/Dataset_z_887_200026_tweets.csv",
 			"HurricaneMatthew/Dataset_z_890_151648_tweets.csv")
 */
 
-val fileNames = Array("trails/AT_0224.txt", "trails/CDT_0224.txt", "trails/PCT_0224.txt")
+//val fileNames = Array("trails/AT_0224.txt", "trails/CDT_0224.txt", "trails/PCT_0224.txt")
+val fileNames = Array("trails/AT_0224.txt")
 
 def cleaningPhase1(tweet: SVTweet): SVTweet = {
     tweet.cleanPunctuation()
-    tweet.cleanStopWords()
     tweet.cleanRTMarker()
     tweet.toLowerCase()
+    tweet.cleanStopWords()
 
     return tweet
 }
@@ -53,5 +54,7 @@ for( fileName <- fileNames) {
 
     collection.applyFunction(cleaningPhase2)
     val topics = ldaWrapper.analyze(collection)
+
+    collection.getCollection.take(10).foreach(tweet => println(tweet.toStringVerbose()))
     ldaWrapper.writeTopicsToLocalFile("results/MassExtractionExample/" + fileName.split("/").last + "_topics", topics)
 }
