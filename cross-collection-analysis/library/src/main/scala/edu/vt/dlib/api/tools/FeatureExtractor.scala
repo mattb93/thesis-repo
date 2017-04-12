@@ -6,34 +6,30 @@ class FeatureExtractor() extends Serializable{
 
     import org.apache.spark.rdd.RDD
     import edu.vt.dlib.api.dataStructures.TweetCollection
+    import edu.vt.dlib.api.dataStructures.Tweet
     import java.io._
 
 	// Create a dataframe to hold the collected features
 
-	def extractMentions(collection: TweetCollection) : RDD[(String, String)] = {
-        val filtered = collection.getCollection().map(tweet => (tweet.id, tweet.tokens.filter(token => """@[a-zA-Z0-9]+""".r.pattern.matcher(token).matches)))
-        return filtered.filter(tweet => !tweet._2.isEmpty).map(tweet => (tweet._1, tweet._2.mkString(" ")))
+	def extractMentions(collection: TweetCollection[_ <: Tweet]) : RDD[(String, String)] = {
+        return collection.getCollection().map(tweet => (tweet.id, tweet.mentions.mkString(" ")))
 	}
 
-	def extractHashtags(collection: TweetCollection) : RDD[(String, String)] = {
-        val filtered = collection.getCollection().map(tweet => (tweet.id, tweet.tokens.filter(token => """#[a-zA-Z0-9]+""".r.pattern.matcher(token).matches)))
-        return filtered.filter(tweet => !tweet._2.isEmpty).map(tweet => (tweet._1, tweet._2.mkString(" ")))
+	def extractHashtags(collection: TweetCollection[_ <: Tweet]) : RDD[(String, String)] = {
+        return collection.getCollection().map(tweet => (tweet.id, tweet.hashtags.mkString(" ")))
 	}
 
-	def extractURLs(collection: TweetCollection) : RDD[(String, String)] = {
-        val filtered = collection.getCollection().map(tweet => (tweet.id, tweet.tokens.filter(token => """http://t\.co/[a-zA-Z0-9]+""".r.pattern.matcher(token).matches)))
-        return filtered.filter(tweet => !tweet._2.isEmpty).map(tweet => (tweet._1, tweet._2.mkString(" ")))
+	def extractURLs(collection: TweetCollection[_ <: Tweet]) : RDD[(String, String)] = {
+        return collection.getCollection().map(tweet => (tweet.id, tweet.urls.mkString(" ")))
 	}
 
-	def extractRegexMatches(collection: TweetCollection, regex: String) : RDD[(String, String)] = {
-        val filtered = collection.getCollection().map(tweet => (tweet.id, tweet.tokens.filter(token => regex.r.pattern.matcher(token).matches)))
-        return filtered.filter(tweet => !tweet._2.isEmpty).map(tweet => (tweet._1, tweet._2.mkString(" ")))
+	def extractRegexMatches(collection: TweetCollection[_ <: Tweet], regex: String) : RDD[(String, String)] = {
+        return collection.getCollection().map(tweet => (tweet.id, tweet.tokens.filter(token => regex.r.pattern.matcher(token).matches).mkString(" ")))
 	}
 
-	def extractToken(collection: TweetCollection, tokenToMatch: String, preserveText: Boolean = true) : RDD[(String, String)] = {
+	def extractToken(collection: TweetCollection[_ <: Tweet], tokenToMatch: String, preserveText: Boolean = true) : RDD[(String, String)] = {
         if(!preserveText) {
-            val filtered = collection.getCollection().map(tweet => (tweet.id, tweet.tokens.filter(token => token == tokenToMatch)))
-            return filtered.filter(tweet => !tweet._2.isEmpty).map(tweet => (tweet._1, tweet._2.mkString(" ")))
+             return collection.getCollection().map(tweet => (tweet.id, tweet.tokens.filter(token => token == tokenToMatch).mkString(" ")))
         }
 	
 		return collection.getCollection().filter(tweet => tweet.tokens.contains(tokenToMatch)).map(tweet => (tweet.id, tweet.tokens.mkString(" ")))
