@@ -8,6 +8,7 @@ class TweetCollectionFactory(@transient sc: org.apache.spark.SparkContext, @tran
     import org.apache.avro.mapred.AvroWrapper
     import org.apache.avro.generic.GenericRecord
     import org.apache.hadoop.io.NullWritable
+    import org.apache.spark.rdd.RDD
 
     def createFromAvro(collectionID: String, collectionNumber: Int): TweetCollection[AvroTweet] = {
         val path = "/collections/tweets/z_" + collectionNumber + "/part-m-00000.avro"
@@ -22,5 +23,18 @@ class TweetCollectionFactory(@transient sc: org.apache.spark.SparkContext, @tran
         val collection = sc.textFile(path).filter(line => line.split(config.separator).length == config.numColumns).map(line => new SVTweet(line, config))
 
         return new TweetCollection[SVTweet](collectionID, sc, sqlContext, collection)
+    }
+
+    def createFromStringsRDD(collectionID: String, collection: RDD[(String, String)]): TweetCollection[SimpleTweet] = {
+        val tweetCollection = collection.map(pair => new SimpleTweet(pair._1, pair._2))
+
+        return new TweetCollection[SimpleTweet](collectionID, sc, sqlContext, tweetCollection)
+    }
+
+    def createFromSeqs(collectionID: String, idList: Seq[String], textList: Seq[String]): TweetCollection[SimpleTweet] = {
+        val combined = idList.zip(textList)
+        val collection = sc.parallelize(combined.map(pair => new SimpleTweet(pair._1, pair._2)))
+
+        return new TweetCollection[SimpleTweet](collectionID, sc, sqlContext, collection)
     }
 }

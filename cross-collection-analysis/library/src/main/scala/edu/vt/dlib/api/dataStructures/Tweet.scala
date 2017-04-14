@@ -1,20 +1,23 @@
-abstract class Tweet() extends Serializable {
-	var tokens:		Array[String]
-	var hashtags:	Array[String]
-	var mentions:	Array[String]
-	var urls:		Array[String]
-	var isRetweet: 	Boolean
-	var payload:	Map[String, Any]
+package edu.vt.dlib.api.dataStructures
+
+abstract class Tweet(val text: String, val id: String) extends Serializable {
+	var tokens:		Array[String] = null
+	var hashtags:	Array[String] = null
+	var mentions:	Array[String] = null
+	var urls:		Array[String] = null
+	var isRetweet: 	Boolean = false
+	var payload:	Map[String, Any] = null
 
 	def cleanRTMarker()
 	def cleanMentions()
 	def cleanHashtags()
 	def cleanURLs()
 	def cleanPunctuation()
-	def cleanRegexMatches(scala.util.matching.Regex)
-	def cleanRegexNonmatches(scala.util.matching.Regex)
-	def cleanTokens(Array[String])
+	def cleanRegexMatches(regex: scala.util.matching.Regex)
+	def cleanRegexNonmatches(regex: scala.util.matching.Regex)
+	def cleanTokens(tokens: Array[String])
 	def toLowerCase()
+    def addToPayload(key: String, value: Any)
 
 	def toStringVerbose(): String
 
@@ -22,7 +25,7 @@ abstract class Tweet() extends Serializable {
 		return id + "\t" + tokens.mkString(" ")
 	}
 
-	def canEqual(a: Any) = a.isInstanceOf[_ <: Tweet]
+	def canEqual(a: Any) = a.isInstanceOf[Tweet]
 
   	override def equals(that: Any): Boolean =
     	that match {

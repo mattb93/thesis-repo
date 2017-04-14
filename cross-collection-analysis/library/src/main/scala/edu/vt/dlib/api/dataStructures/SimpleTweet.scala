@@ -1,19 +1,19 @@
 package edu.vt.dlib.api.dataStructures
 import org.apache.spark.ml.feature.StopWordsRemover
 
-class SimpleTweet(val text: String, var id: String = "") extends Tweet{
+class SimpleTweet(id: String, text: String) extends Tweet(id, text){
 	
 	/*
 	 * Fields which all tweets can provide or generate
 	 */
-	tokens:		Array[String] = text.split(" ")
-	hashtags:	Array[String] = tokens.filter(token => """#[a-zA-Z0-9]+""".r.pattern.matcher(token).matches)
-	mentions:	Array[String] = tokens.filter(token => """@[a-zA-Z0-9]+""".r.pattern.matcher(token).matches)
-	urls:		Array[String] = tokens.filter(token => """http://t\.co/[a-zA-Z0-9]+""".r.pattern.matcher(token).matches)
+	tokens = text.split(" ")
+	hashtags = tokens.filter(token => """#[a-zA-Z0-9]+""".r.pattern.matcher(token).matches)
+	mentions = tokens.filter(token => """@[a-zA-Z0-9]+""".r.pattern.matcher(token).matches)
+	urls = tokens.filter(token => """http://t\.co/[a-zA-Z0-9]+""".r.pattern.matcher(token).matches)
 
-	isRetweet: 	Boolean = tokens(0) == "RT" || tokens(0) == "\"RT"
+	isRetweet = tokens(0) == "RT" || tokens(0) == "\"RT"
 	// Add a payload to hold other arbitrary data
-	payload:	Map[String, Any] = scala.collection.immutable.Map[String, Any]()
+	payload = scala.collection.immutable.Map[String, Any]()
 
 
     def addToPayload(key: String, value: Any) = {

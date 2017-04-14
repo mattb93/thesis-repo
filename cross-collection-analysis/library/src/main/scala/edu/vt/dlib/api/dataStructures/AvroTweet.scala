@@ -2,7 +2,7 @@ package edu.vt.dlib.api.dataStructures
 
 import org.apache.avro.generic.GenericRecord
 
-class AvroTweet(dataRecord: GenericRecord) extends SimpleTweet(dataRecord.get("text").toString, dataRecord.get("id").toString) {
+class AvroTweet(dataRecord: GenericRecord) extends SimpleTweet(dataRecord.get("id").toString, dataRecord.get("text").toString) {
 	
 	var archivesource = dataRecord.get("archivesource").toString
 	var to_user_id = dataRecord.get("to_user_id").toString
@@ -18,7 +18,7 @@ class AvroTweet(dataRecord: GenericRecord) extends SimpleTweet(dataRecord.get("t
 	var time = dataRecord.get("time").toString.toInt
 
 	override def toStringVerbose(): String = {
-		result = super.toStringVerbose()
+		var result = super.toStringVerbose()
 
 		result = result + "\n\tAvro content:" +
 			"\n\t\tarchivesource: " + archivesource +
