@@ -19,7 +19,7 @@ class TweetCollectionFactory(@transient sc: org.apache.spark.SparkContext, @tran
     }
 
     def createFromSVFile(collectionID: String, path: String, config: SVConfig = new SVConfig()): TweetCollection[SVTweet] = {
-        val collection = sc.textFile(path).filter(line => line contains config.separator).map(line => new SVTweet(line, config))
+        val collection = sc.textFile(path).filter(line => line.split(config.separator).length == config.numColumns).map(line => new SVTweet(line, config))
 
         return new TweetCollection[SVTweet](collectionID, sc, sqlContext, collection)
     }

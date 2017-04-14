@@ -11,7 +11,7 @@ val fileNames = Array("HurricaneMatthew/Dataset_z_887_200026_tweets.csv",
 */
 
 //val fileNames = Array("trails/AT_0224.txt", "trails/CDT_0224.txt", "trails/PCT_0224.txt")
-val fileNames = Array("trails/AT_0224.txt")
+val fileNames = Array("trails/AT0412.txt")
 
 def cleaningPhase1(tweet: SVTweet): SVTweet = {
     tweet.cleanPunctuation()
@@ -29,11 +29,16 @@ def cleaningPhase2(tweet: SVTweet): SVTweet = {
 }
 
 val config = new SVConfig()
+config.id = 1
+config.text = 12
+config.numColumns = 21
 config.separator = "\t"
 
 val factory = new TweetCollectionFactory(sc, sqlContext)
 val wordCounter = new WordCounter()
 val ldaWrapper = new LDAWrapper()
+ldaWrapper.numTopics = 7
+ldaWrapper.termsToIgnore = Array("appalachian", "trail", "at", "atc")
 val featureExtractor = new FeatureExtractor()
 
 for( fileName <- fileNames) {
