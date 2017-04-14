@@ -2,8 +2,6 @@ package edu.vt.dlib.api.dataStructures
 import org.apache.spark.ml.feature.StopWordsRemover
 
 abstract class Tweet(val text: String, var id: String = "") extends Serializable {
-
-	//import scala.collection.mutable.Map
 	
 	/*
 	 * Fields which all tweets can provide or generate
@@ -18,64 +16,52 @@ abstract class Tweet(val text: String, var id: String = "") extends Serializable
 	var payload:	Map[String, String] = scala.collection.immutable.Map[String, String]()
 
 
-    def addToPayload(key: String, value: String): Tweet = {
+    def addToPayload(key: String, value: String) = {
         payload += key -> value
-        return this
     }
 
-    def cleanStopWords(): Tweet = {
+    def cleanStopWords() {
     	// Shortcut to get Spark default stop words
     	val remover = new StopWordsRemover()
     	val stopWords = remover.getStopWords
 
     	tokens = tokens.filter(!stopWords.contains(_))
-
-    	return this
     }
 
-    def cleanRTMarker(): Tweet = {
+    def cleanRTMarker() = {
     	tokens = tokens.filter(_ != "RT")
-    	return this
     }
 
-    def cleanMentions(): Tweet = {
+    def cleanMentions() = {
     	tokens = tokens.filter(x => ! """@[a-zA-Z0-9]+""".r.pattern.matcher(x).matches)
-    	return this
     }
 
-    def cleanHashtags(): Tweet = {
+    def cleanHashtags() = {
     	tokens = tokens.filter(x => ! """#[a-zA-Z0-9]+""".r.pattern.matcher(x).matches)
-    	return this
     }
 
-    def cleanURLs(): Tweet = {
+    def cleanURLs() = {
 		tokens = tokens.filter(x => ! """http://t\.co/[a-zA-Z0-9]+""".r.pattern.matcher(x).matches)
-		return this
     }
 
-    def cleanPunctuation(): Tweet = {
+    def cleanPunctuation() = {
 		tokens = tokens.map(x => x.replaceAll("[^A-Za-z0-9@#]", "")).filter(x => x.length > 0)
-		return this
     }
 
-    def cleanRegexMatches(regex: scala.util.matching.Regex): Tweet = {
+    def cleanRegexMatches(regex: scala.util.matching.Regex) = {
 		tokens = tokens.filter(x => ! regex.pattern.matcher(x).matches)
-		return this
     }
 
-    def cleanRegexNonmatches(regex: scala.util.matching.Regex): Tweet = {
+    def cleanRegexNonmatches(regex: scala.util.matching.Regex) = {
 		tokens = tokens.filter(x => regex.pattern.matcher(x).matches)
-		return this
     }
 
-    def cleanTokens(tokensToRemove: Array[String]): Tweet = {
+    def cleanTokens(tokensToRemove: Array[String]) = {
         tokens = tokens.filter(x => ! tokensToRemove.contains(x))
-        return this
     }
 
-    def toLowerCase(): Tweet = {
+    def toLowerCase() = {
     	tokens = tokens.map(x => x.toLowerCase())
-    	return this
     }
 
 	override def toString(): String =   {
@@ -103,7 +89,7 @@ abstract class Tweet(val text: String, var id: String = "") extends Serializable
 		return result
 	}
 
-	def canEqual(a: Any) = a.isInstanceOf[Tweet]
+	def canEqual(a: Any) = a.isInstanceOf[_ <: Tweet]
 
   	override def equals(that: Any): Boolean =
     	that match {
