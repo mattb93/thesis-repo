@@ -73,7 +73,7 @@ class TweetCollection[T <: Tweet: ClassTag](val collectionID: String, @transient
     def filterRetweets(): TweetCollection[T] = {
         println("Removing Retweets")
 
-        collection = collection.filter(tweet => tweet.tokens.contains("RT"))
+        collection = collection.filter(tweet => ! tweet.isRetweet)
 
         return this
     }
@@ -118,7 +118,7 @@ class TweetCollection[T <: Tweet: ClassTag](val collectionID: String, @transient
         return this
     }
 
-    def filterByPayloadKeyValue(key: String, value: String, keepIf: Boolean = true) : TweetCollection[T] = {
+    def filterByPayloadKeyValue(key: String, value: Any, keepIf: Boolean = true) : TweetCollection[T] = {
 
         collection = collection.filter(tweet => (tweet.payload.apply(key) == value) == keepIf)
 
