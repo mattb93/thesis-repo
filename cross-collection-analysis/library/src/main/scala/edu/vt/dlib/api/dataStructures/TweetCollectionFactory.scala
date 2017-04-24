@@ -10,8 +10,17 @@ class TweetCollectionFactory(@transient sc: org.apache.spark.SparkContext, @tran
     import org.apache.hadoop.io.NullWritable
     import org.apache.spark.rdd.RDD
 
-    def createFromAvro(collectionID: String, collectionNumber: Int): TweetCollection[AvroTweet] = {
+    def createFromArchive(collectionID: String, collectionNumber: Int): TweetCollection[AvroTweet] = {
         val path = "/collections/tweets/z_" + collectionNumber + "/part-m-00000.avro"
+        val records = sc.hadoopFile[AvroWrapper[GenericRecord], NullWritable, AvroInputFormat[GenericRecord]](path)
+
+        val collection = records.map(lambda => new AvroTweet(lambda._1.datum))
+
+        return new TweetCollection[AvroTweet](collectionID, sc, sqlContext, collection)
+    }
+
+    def createFromAvroFile(collectionID: String, path: String): TweetCollection[AvroTweet] = {
+        
         val records = sc.hadoopFile[AvroWrapper[GenericRecord], NullWritable, AvroInputFormat[GenericRecord]](path)
 
         val collection = records.map(lambda => new AvroTweet(lambda._1.datum))
