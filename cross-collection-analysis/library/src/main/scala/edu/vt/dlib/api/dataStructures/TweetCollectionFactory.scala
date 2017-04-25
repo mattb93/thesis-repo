@@ -7,7 +7,10 @@ class TweetCollectionFactory(@transient sc: org.apache.spark.SparkContext, @tran
     import org.apache.avro.mapred.AvroInputFormat
     import org.apache.avro.mapred.AvroWrapper
     import org.apache.avro.generic.GenericRecord
+    
     import org.apache.hadoop.io.NullWritable
+    import org.apache.hadoop.hbase.client
+
     import org.apache.spark.rdd.RDD
 
     def createFromArchive(collectionID: String, collectionNumber: Int): TweetCollection[AvroTweet] = {
@@ -48,6 +51,15 @@ class TweetCollectionFactory(@transient sc: org.apache.spark.SparkContext, @tran
     }
 
     def createFromHBase(collectionID: String, table: HTable, config: HBaseConfig): TweetCollection[HBaseTweet] = {
-        
+        val scanner = table.getScanner(new Scan()).iterator()
+
+        val localCollection = new Array[SimpleTweet](scanner.length)
+
+        val index = 0
+        for(result <- scanner) {
+            localCollection(index) = new HBaseTweet(result)
+        }
+
+        return new TweetCollection(collectionID, sc, sqlContext, sc.parallelize(localCollection))
     }
 }
