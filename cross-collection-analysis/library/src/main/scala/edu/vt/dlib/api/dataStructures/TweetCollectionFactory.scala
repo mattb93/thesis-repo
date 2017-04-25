@@ -46,4 +46,8 @@ class TweetCollectionFactory(@transient sc: org.apache.spark.SparkContext, @tran
 
         return new TweetCollection[SimpleTweet](collectionID, sc, sqlContext, collection)
     }
+
+    def createFromHBase(collectionID: String, table: HTable, config: HBaseConfig): TweetCollection[HBaseTweet] = {
+        
+    }
 }
