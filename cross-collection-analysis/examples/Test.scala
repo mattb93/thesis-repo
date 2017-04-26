@@ -63,7 +63,7 @@ class Test() extends Serializable{
 
     def process(collection: TweetCollection[SVTweet]) = {
 
-        collection.applyFunction(cleaning).getCollection().take(20).foreach(println)
+        collection.applyFunction(cleaning)
     }
 }
 
@@ -79,3 +79,5 @@ var collection = factory.createFromSVFile(path.split("/").last.split('.')(0), pa
 
 var test = new Test()
 test.process(collection)
+
+collection.writeToLocalFile("DUMP.tsv")

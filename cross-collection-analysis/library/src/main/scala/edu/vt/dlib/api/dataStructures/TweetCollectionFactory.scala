@@ -9,9 +9,12 @@ class TweetCollectionFactory(@transient sc: org.apache.spark.SparkContext, @tran
     import org.apache.avro.generic.GenericRecord
     
     import org.apache.hadoop.io.NullWritable
-    import org.apache.hadoop.hbase.client
+    import org.apache.hadoop.hbase.client.{HTable, Scan}
 
     import org.apache.spark.rdd.RDD
+
+    import org.apache.hadoop.hbase.HBaseConfiguration
+    import org.apache.hadoop.hbase.mapreduce.TableInputFormat
 
     def createFromArchive(collectionID: String, collectionNumber: Int): TweetCollection[AvroTweet] = {
         val path = "/collections/tweets/z_" + collectionNumber + "/part-m-00000.avro"
@@ -49,11 +52,11 @@ class TweetCollectionFactory(@transient sc: org.apache.spark.SparkContext, @tran
 
         return new TweetCollection[SimpleTweet](collectionID, sc, sqlContext, collection)
     }
-
+/*
     def createFromHBase(collectionID: String, table: HTable, config: HBaseConfig): TweetCollection[HBaseTweet] = {
-        val scanner = table.getScanner(new Scan()).iterator()
+        val scanner = table.getScanner(new Scan()).cache()
 
-        val localCollection = new Array[SimpleTweet](scanner.length)
+        val localCollection = new Array[HBaseTweet](scanner.size())
 
         val index = 0
         for(result <- scanner) {
@@ -62,4 +65,25 @@ class TweetCollectionFactory(@transient sc: org.apache.spark.SparkContext, @tran
 
         return new TweetCollection(collectionID, sc, sqlContext, sc.parallelize(localCollection))
     }
+*/
+    def createFromHBase(collectionID: String, config: HBaseConfig): TweetCollection[HBaseTweet] = {
+        val conf = HBaseConfiguration.create()
+        conf.set(TableInputFormat.INPUT_TABLE, config.tableName)
+
+        val hbaseRDD = sc.newAPIHadoopRDD(conf, classOf[TableInputFormat],
+            classOf[org.apache.hadoop.hbase.io.ImmutableBytesWritable],
+            classOf[org.apache.hadoop.hbase.client.Result])
+
+        val collection = hbaseRDD.map(result => new HBaseTweet(result._2, config))
+
+        return new TweetCollection(collectionID, sc, sqlContext, collection)
+    }
 }
+
+
+
+
+
+
+
+
