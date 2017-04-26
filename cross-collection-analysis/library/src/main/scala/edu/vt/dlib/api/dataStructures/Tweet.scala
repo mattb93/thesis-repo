@@ -21,6 +21,21 @@ abstract class Tweet(val text: String, val id: String) extends Serializable {
 
 	def toStringVerbose(): String
 
+	def toTSV(): String = {
+		var result = id + "\t" + 
+			tokens.mkString(" ") + "\t" + 
+			text + "\t" + 
+			hashtags.mkString(" ") + "\t" + 
+			mentions.mkString(" ") + "\t" + 
+			urls.mkString(" ")
+
+		for( (key, value) <- payload) {
+		    result = result + "\t" + value
+	    }
+
+	    return result
+	}
+
 	override def toString(): String =   {
 		return id + "\t" + tokens.mkString(" ")
 	}

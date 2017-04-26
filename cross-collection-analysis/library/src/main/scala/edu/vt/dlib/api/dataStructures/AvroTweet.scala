@@ -17,6 +17,26 @@ class AvroTweet(dataRecord: GenericRecord) extends SimpleTweet(dataRecord.get("i
 	var created_at = dataRecord.get("created_at").toString
 	var time = dataRecord.get("time").toString.toInt
 
+	override def toTSV(): String = {
+		var result = super.toTSV()
+
+		result = result + "\t" + 
+			archivesource + "\t" + 
+			to_user_id + "\t" + 
+			from_user + "\t" + 
+			from_user_id + "\t" + 
+			iso_language_code + "\t" + 
+			source + "\t" + 
+			profile_image_url + "\t" + 
+			geo_type + "\t" + 
+			geo_coordinates_0 + "\t" + 
+			geo_coordinates_1 + "\t" + 
+			created_at + "\t" + 
+			time
+
+		return result
+	}
+
 	override def toStringVerbose(): String = {
 		var result = super.toStringVerbose()
 

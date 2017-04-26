@@ -1,6 +1,7 @@
 package edu.vt.dlib.api.dataStructures
 
 import java.io.Serializable
+import java.io.{File, FileWriter, BufferedWriter}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.SQLContext
@@ -158,5 +159,18 @@ class TweetCollection[T <: Tweet: ClassTag](val collectionID: String, @transient
         if(filterDuplicates){
             collection = collection.distinct()
         }
+    }
+
+    def writeToLocalFile(path: String) = {
+        // Write the results back to local disk using standard java io
+        val file = new File(path)
+        val bufferedWriter = new BufferedWriter(new FileWriter(file))
+
+        for(tweet <- collection.collect()) {
+            bufferedWriterCounts.write(tweet.toTSV())
+        }
+
+        bufferedWriterCounts.close()
+    
     }
 }
