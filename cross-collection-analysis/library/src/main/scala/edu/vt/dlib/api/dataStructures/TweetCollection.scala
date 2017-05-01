@@ -168,7 +168,7 @@ class TweetCollection[T <: Tweet: ClassTag](val collectionID: String, @transient
         val bufferedWriter = new BufferedWriter(new FileWriter(file))
 
         for(tweet <- collection.collect()) {
-            bufferedWriter.write(tweet.toTSV())
+            bufferedWriter.write(tweet.toTSV() + "\n")
         }
 
         bufferedWriter.close()
