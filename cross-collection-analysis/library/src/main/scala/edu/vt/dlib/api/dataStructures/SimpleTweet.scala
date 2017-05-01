@@ -30,18 +30,20 @@ class SimpleTweet(id: String, text: String) extends Tweet(id, text){
 
     def cleanRTMarker() = {
     	tokens = tokens.filter(_ != "RT")
+        tokens = tokens.filter(_ != "rt")
     }
 
     def cleanMentions() = {
-    	tokens = tokens.filter(x => ! """@[a-zA-Z0-9]+""".r.pattern.matcher(x).matches)
+    	tokens = tokens.filter(x => ! x.startsWith("@"))
     }
 
     def cleanHashtags() = {
-    	tokens = tokens.filter(x => ! """#[a-zA-Z0-9]+""".r.pattern.matcher(x).matches)
+    	tokens = tokens.filter(x => ! x.startsWith("#"))
     }
 
     def cleanURLs() = {
-		tokens = tokens.filter(x => ! """http://t\.co/[a-zA-Z0-9]+""".r.pattern.matcher(x).matches)
+		tokens = tokens.filter(x => ! """http://t\.co/""".r.pattern.matcher(x).matches)
+        tokens = tokens.filter(x => ! """http://t\.co/""".r.pattern.matcher(x).matches)
     }
 
     def cleanPunctuation() = {
