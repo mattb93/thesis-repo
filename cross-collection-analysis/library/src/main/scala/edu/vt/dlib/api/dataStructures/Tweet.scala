@@ -1,6 +1,6 @@
 package edu.vt.dlib.api.dataStructures
 
-abstract class Tweet(val text: String, val id: String) extends Serializable {
+abstract class Tweet(val id: String, val text: String) extends Serializable {
 	var tokens:		Array[String] = null
 	var hashtags:	Array[String] = null
 	var mentions:	Array[String] = null
