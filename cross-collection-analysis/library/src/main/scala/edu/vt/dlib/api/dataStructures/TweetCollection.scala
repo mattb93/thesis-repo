@@ -64,9 +64,9 @@ class TweetCollection[T <: Tweet: ClassTag](val collectionID: String, @transient
     def filter(function: T => Boolean): TweetCollection[T] = {
         val mapFunctionWrapper = SerializableConditionWrapper[T](function)
          
-        collection = collection.filter(mapFunctionWrapper.f)
+        val newCollection = collection.filter(mapFunctionWrapper.f)
 
-        return this
+        return new TweetCollection[T](collectionID, sc, sqlContext, newCollection)
     }
     /*
      * Remove retweets from the collection entirely
@@ -74,56 +74,57 @@ class TweetCollection[T <: Tweet: ClassTag](val collectionID: String, @transient
     def filterRetweets(): TweetCollection[T] = {
         println("Removing Retweets")
 
-        collection = collection.filter(tweet => ! tweet.isRetweet)
+        val newCollection = collection.filter(tweet => ! tweet.isRetweet)
 
-        return this
+        return new TweetCollection[T](collectionID, sc, sqlContext, newCollection)
     }
 
 
     def filterByID(id: String, keepIf: Boolean = true) : TweetCollection[T] = {
 
-        collection = collection.filter(tweet => (tweet.id == id) == keepIf)
+        val newCollection = collection.filter(tweet => (tweet.id == id) == keepIf)
 
-        return this
+        return new TweetCollection[T](collectionID, sc, sqlContext, newCollection)
     }
 
     def filterByMention(mention: String, keepIf: Boolean = true) : TweetCollection[T] = {
 
-        collection = collection.filter(tweet => (tweet.mentions.contains(mention)) == keepIf)
+        val newCollection = collection.filter(tweet => (tweet.mentions.contains(mention)) == keepIf)
 
-        return this
+        return new TweetCollection[T](collectionID, sc, sqlContext, newCollection)
     }
 
     def filterByHashtag(hashtag: String, keepIf: Boolean = true) : TweetCollection[T] = {
 
-        collection = collection.filter(tweet => (tweet.hashtags.contains(hashtag)) == keepIf)
+        val newCollection = collection.filter(tweet => (tweet.hashtags.contains(hashtag)) == keepIf)
 
-        return this
+        return new TweetCollection[T](collectionID, sc, sqlContext, newCollection)
     }
 
     def filterByUrl(url: String, keepIf: Boolean = true) : TweetCollection[T] = {
 
-        collection = collection.filter(tweet => (tweet.urls.contains(url)) == keepIf)
+        val newCollection = collection.filter(tweet => (tweet.urls.contains(url)) == keepIf)
 
-        return this
+        return new TweetCollection[T](collectionID, sc, sqlContext, newCollection)
     }
 
     def filterByTokens(filter: Array[String], requireAll: Boolean = false, keepIf: Boolean = true): TweetCollection[T] = {
+        var newCollection: RDD[T] = null
         if(requireAll) {
-            collection = collection.filter(tweet => tweet.tokens.union(filter) == filter)
+            newCollection = collection.filter(tweet => tweet.tokens.union(filter) == filter)
         }
         else {
-            collection = collection.filter(tweet => ! tweet.tokens.union(filter).isEmpty)
+            newCollection = collection.filter(tweet => ! tweet.tokens.union(filter).isEmpty)
         }
 
-        return this
+        return new TweetCollection[T](collectionID, sc, sqlContext, newCollection)
     }
 
     def filterByPayloadKeyValue(key: String, value: Any, keepIf: Boolean = true) : TweetCollection[T] = {
 
-        collection = collection.filter(tweet => (tweet.payload.apply(key) == value) == keepIf)
+        val newCollection = collection.filter(tweet => (tweet.payload.apply(key) == value) == keepIf)
 
-        return this
+        return new TweetCollection[T](collectionID, sc, sqlContext, newCollection)
     }
 
     //.........................................................................
