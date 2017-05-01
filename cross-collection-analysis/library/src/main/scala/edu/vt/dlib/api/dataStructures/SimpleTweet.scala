@@ -42,8 +42,8 @@ class SimpleTweet(id: String, text: String) extends Tweet(id, text){
     }
 
     def cleanURLs() = {
-		tokens = tokens.filter(x => ! """http://t\.co/""".r.pattern.matcher(x).matches)
-        tokens = tokens.filter(x => ! """http://t\.co/""".r.pattern.matcher(x).matches)
+		tokens = tokens.filter(x => ! """http://t\.co/.*""".r.pattern.matcher(x).matches)
+        tokens = tokens.filter(x => ! """https://t\.co/.*""".r.pattern.matcher(x).matches)
     }
 
     def cleanPunctuation() = {
